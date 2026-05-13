@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # RinggitPay Website
 
 Modern, animated payment gateway website built with React, Next.js, and Framer Motion.
@@ -197,3 +198,6 @@ For issues or customizations, check the component files for detailed comments an
 ## 📄 License
 
 Private project - RinggitPay
+=======
+# RP
+>>>>>>> ddb08a9d8188bb21de803448e8a798c381973699
