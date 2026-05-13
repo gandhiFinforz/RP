@@ -953,120 +953,110 @@ function PaymentPagesFlowVisual() {
           initial={{ opacity: 0, x: 400 }}
           animate={{ opacity: stage === 2 ? 1 : 0, x: stage === 2 ? 0 : stage > 2 ? -400 : 400 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-6 flex flex-col justify-between overflow-hidden"
+          className="absolute inset-0 p-5 flex flex-col overflow-hidden"
         >
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-ink-500 uppercase tracking-wider">Checkout</span>
-              <div className="flex gap-1">
-                <div className="w-2 h-2 rounded-full bg-brand-600" />
-                <div className="w-2 h-2 rounded-full bg-brand-600" />
-                <div className="w-2 h-2 rounded-full bg-brand-600" />
-                <div className="w-2 h-2 rounded-full bg-ink-200" />
-              </div>
+          <div className="flex items-center justify-between mb-2 flex-shrink-0">
+            <span className="text-xs font-semibold text-ink-500 uppercase tracking-wider">Checkout</span>
+            <div className="flex gap-1">
+              <div className="w-2 h-2 rounded-full bg-brand-600" />
+              <div className="w-2 h-2 rounded-full bg-brand-600" />
+              <div className="w-2 h-2 rounded-full bg-brand-600" />
+              <div className="w-2 h-2 rounded-full bg-ink-200" />
             </div>
+          </div>
 
-            {/* Product Summary with Secure Shield */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-              className="relative p-3 rounded-lg bg-gradient-to-br from-brand-50 via-cyan-50 to-white border border-brand-100 mb-3"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-[10px] font-semibold text-ink-500 uppercase tracking-wider">Lumen Studio</p>
-                  <p className="text-sm font-bold text-ink-900 mt-0.5">Growth Plan</p>
+          {/* Product Summary with Secure Shield */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="relative p-2.5 rounded-lg bg-gradient-to-br from-brand-50 via-cyan-50 to-white border border-brand-100 mb-2 flex-shrink-0"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[9px] font-semibold text-ink-500 uppercase tracking-wider">Lumen Studio</p>
+                <div className="flex items-baseline gap-1.5 mt-0.5">
+                  <p className="text-base font-bold text-ink-900 tabular-nums">
+                    <AmountCounter target={149} active={stage === 2} />
+                  </p>
+                  <p className="text-[10px] text-ink-500">/ Growth · monthly</p>
                 </div>
-                {/* Secure Shield with Pulse */}
-                <motion.div className="relative">
+              </div>
+              {/* Secure Shield with Pulse */}
+              <motion.div className="relative flex-shrink-0">
+                <motion.div
+                  animate={{ scale: [1, 1.15, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center"
+                >
+                  <svg className="w-3.5 h-3.5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                </motion.div>
+                <motion.div
+                  animate={{ scale: [1, 1.8, 1], opacity: [0.5, 0, 0.5] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  className="absolute inset-0 rounded-full border border-emerald-300"
+                />
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Payment Methods - Slide Upward */}
+          <p className="text-[9px] font-semibold text-ink-600 uppercase tracking-wider mb-1.5 flex-shrink-0">Payment Method</p>
+          <div className="space-y-1 flex-1 min-h-0">
+            {[
+              { name: 'Credit / Debit Card', sub: '•••• 4242', icon: 'card', tint: 'bg-gradient-to-br from-brand-500 to-brand-700', selected: true },
+              { name: 'FPX Online Banking', sub: 'Direct transfer', icon: 'bank', tint: 'bg-gradient-to-br from-emerald-500 to-emerald-700' },
+              { name: 'DuitNow QR', sub: 'Scan and pay', icon: 'qr', tint: 'bg-gradient-to-br from-cyan-500 to-cyan-700' },
+            ].map((method, i) => (
+              <motion.div
+                key={method.name}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 + i * 0.1, type: 'spring' }}
+                whileHover={{
+                  scale: 1.02,
+                  boxShadow: '0 4px 12px rgba(27, 119, 246, 0.12)',
+                }}
+                className={`px-2 py-1.5 rounded-lg border flex items-center justify-between cursor-pointer transition-all ${
+                  method.selected
+                    ? 'border-brand-600 bg-brand-50/50'
+                    : 'border-ink-200 bg-white hover:border-brand-300'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <div className={`w-6 h-6 rounded-md ${method.tint} flex items-center justify-center text-white shadow-sm`}>
+                    <PayIcon type={method.icon} />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-semibold text-ink-900 leading-tight">{method.name}</p>
+                    <p className="text-[9px] text-ink-500 leading-tight">{method.sub}</p>
+                  </div>
+                </div>
+                {method.selected && (
                   <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                    className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.5, type: 'spring' }}
+                    className="w-4 h-4 rounded-full bg-brand-600 flex items-center justify-center flex-shrink-0"
                   >
-                    <svg className="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   </motion.div>
-                  <motion.div
-                    animate={{ scale: [1, 2, 1], opacity: [0.5, 0, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute inset-0 rounded-full border-2 border-emerald-300"
-                  />
-                </motion.div>
-              </div>
-
-              {/* Auto Amount Counter */}
-              <div className="flex items-baseline gap-1.5 mt-2">
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-xl font-bold text-ink-900"
-                >
-                  <AmountCounter target={149} active={stage === 2} />
-                </motion.p>
-                <p className="text-xs text-ink-500">/ month</p>
-              </div>
-            </motion.div>
-
-            {/* Payment Methods - Slide Upward */}
-            <p className="text-[10px] font-semibold text-ink-600 uppercase tracking-wider mb-2">Payment Method</p>
-            <div className="space-y-1.5">
-              {[
-                { name: 'Credit / Debit Card', sub: '•••• 4242', icon: 'card', tint: 'bg-gradient-to-br from-brand-500 to-brand-700', selected: true },
-                { name: 'FPX Online Banking', sub: 'Direct transfer', icon: 'bank', tint: 'bg-gradient-to-br from-emerald-500 to-emerald-700' },
-                { name: 'DuitNow QR', sub: 'Scan and pay', icon: 'qr', tint: 'bg-gradient-to-br from-cyan-500 to-cyan-700' },
-              ].map((method, i) => (
-                <motion.div
-                  key={method.name}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 + i * 0.12, type: 'spring' }}
-                  whileHover={{
-                    scale: 1.02,
-                    boxShadow: '0 8px 20px rgba(27, 119, 246, 0.12)',
-                  }}
-                  className={`p-2 rounded-lg border flex items-center justify-between cursor-pointer transition-all ${
-                    method.selected
-                      ? 'border-brand-600 bg-brand-50/50'
-                      : 'border-ink-200 bg-white hover:border-brand-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className={`w-7 h-7 rounded-lg ${method.tint} flex items-center justify-center text-white shadow-sm`}>
-                      <PayIcon type={method.icon} />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-ink-900">{method.name}</p>
-                      <p className="text-[9px] text-ink-500">{method.sub}</p>
-                    </div>
-                  </div>
-                  {method.selected && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.5, type: 'spring' }}
-                      className="w-4 h-4 rounded-full bg-brand-600 flex items-center justify-center"
-                    >
-                      <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                    </motion.div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
+                )}
+              </motion.div>
+            ))}
           </div>
 
           <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
+            transition={{ delay: 0.7 }}
             whileHover={{ scale: 1.03, y: -1 }}
             whileTap={{ scale: 0.97 }}
-            className="relative w-full mt-2 py-2.5 bg-gradient-to-r from-brand-600 to-cyan-600 text-white rounded-lg font-semibold text-sm overflow-hidden shadow-md"
+            className="relative w-full mt-2 py-2.5 bg-gradient-to-r from-brand-600 to-cyan-600 text-white rounded-lg font-semibold text-xs overflow-hidden shadow-md flex-shrink-0"
           >
             <motion.div
               animate={{ x: ['-100%', '200%'] }}
@@ -2109,82 +2099,549 @@ function ProductVisual({ type, paymentFlowStage, setPaymentFlowStage }) {
   }
 
   // recovery
+  return <SmartRecoveryFlowVisual />
+}
+
+function SmartRecoveryFlowVisual() {
+  const [stage, setStage] = useState(0)
+  const [recoveredAmount, setRecoveredAmount] = useState(0)
+  const [recoveryPercent, setRecoveryPercent] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setStage((prev) => (prev < 2 ? prev + 1 : 0))
+    }, 5500)
+    return () => clearInterval(timer)
+  }, [])
+
+  // Counter animation for stage 3
+  useEffect(() => {
+    if (stage === 2) {
+      setRecoveredAmount(0)
+      setRecoveryPercent(0)
+      const target = 8420
+      const targetPct = 87
+      const duration = 1800
+      const startTime = Date.now()
+      const animate = () => {
+        const elapsed = Date.now() - startTime
+        const progress = Math.min(elapsed / duration, 1)
+        const eased = 1 - Math.pow(1 - progress, 3)
+        setRecoveredAmount(Math.floor(target * eased))
+        setRecoveryPercent(Math.floor(targetPct * eased))
+        if (progress < 1) requestAnimationFrame(animate)
+      }
+      const rafId = requestAnimationFrame(animate)
+      return () => cancelAnimationFrame(rafId)
+    }
+  }, [stage])
+
   return (
-    <div className="w-full max-w-sm">
-      <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-lg">
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <p className="font-bold text-ink-900">Smart Recovery</p>
-            <p className="text-xs text-ink-500">Last 30 days</p>
+    <div className="w-full max-w-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-lg relative h-96">
+        {/* Stage 1: Detect Failed Payment */}
+        <motion.div
+          initial={{ opacity: 0, x: 400 }}
+          animate={{ opacity: stage === 0 ? 1 : 0, x: stage === 0 ? 0 : -400 }}
+          transition={{ duration: 0.6, ease: 'easeInOut' }}
+          className="absolute inset-0 p-5 flex flex-col overflow-hidden"
+        >
+          <div className="flex items-center justify-between mb-3 flex-shrink-0">
+            <span className="text-xs font-semibold text-ink-500 uppercase tracking-wider">AI Detection</span>
+            <div className="flex gap-1">
+              <div className="w-2 h-2 rounded-full bg-rose-500" />
+              <div className="w-2 h-2 rounded-full bg-ink-200" />
+              <div className="w-2 h-2 rounded-full bg-ink-200" />
+            </div>
           </div>
-          <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-full">
-            +38% recovered
-          </span>
-        </div>
 
-        <div className="grid grid-cols-2 gap-3 mb-5">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-brand-50 to-white border border-brand-100">
-            <p className="text-[10px] text-ink-500 uppercase tracking-wider">Recovered</p>
-            <p className="text-lg font-bold text-ink-900">RM 4,820</p>
-          </div>
-          <div className="p-3 rounded-xl bg-gradient-to-br from-ink-50 to-white border border-ink-100">
-            <p className="text-[10px] text-ink-500 uppercase tracking-wider">In progress</p>
-            <p className="text-lg font-bold text-ink-900">RM 1,240</p>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          {[
-            { who: 'Aisha R.', amt: 'RM 540', state: 'recovered', attempt: 'Retry 2 of 4' },
-            { who: 'Daniel T.', amt: 'RM 220', state: 'retrying', attempt: 'Retry 3 of 4' },
-            { who: 'Priya K.', amt: 'RM 1,180', state: 'recovered', attempt: 'Retry 1 of 4' },
-            { who: 'Mark W.', amt: 'RM 89', state: 'scheduled', attempt: 'Next: in 2h' },
-          ].map((row, i) => (
+          {/* Floating Alert Particles */}
+          {Array.from({ length: 6 }).map((_, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.08 }}
-              className="flex items-center justify-between p-2.5 rounded-lg bg-ink-50/60"
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className={`w-2 h-2 rounded-full shrink-0 ${
-                  row.state === 'recovered' ? 'bg-emerald-500' :
-                  row.state === 'retrying' ? 'bg-amber-500' :
-                  'bg-ink-300'
-                }`} />
-                <div className="min-w-0">
-                  <p className="text-xs font-semibold text-ink-900 truncate">{row.who}</p>
-                  <p className="text-[10px] text-ink-500">{row.attempt}</p>
+              initial={{ opacity: 0, y: 50, x: 0 }}
+              animate={
+                stage === 0
+                  ? {
+                      opacity: [0, 0.6, 0],
+                      y: [50, -50],
+                      x: [(i - 3) * 5, (i - 3) * 15],
+                    }
+                  : {}
+              }
+              transition={{
+                duration: 2.5,
+                delay: i * 0.2,
+                repeat: Infinity,
+                ease: 'easeOut',
+              }}
+              className="absolute w-1.5 h-1.5 rounded-full bg-rose-400 pointer-events-none"
+              style={{ left: `${20 + i * 12}%`, bottom: '30%' }}
+            />
+          ))}
+
+          {/* Failed Transaction Card */}
+          <motion.div
+            animate={
+              stage === 0
+                ? { x: [0, -3, 3, -3, 3, 0] }
+                : {}
+            }
+            transition={{ duration: 0.5, delay: 1.5, repeat: Infinity, repeatDelay: 2 }}
+            className="relative rounded-xl border-2 border-rose-200 bg-gradient-to-br from-rose-50 to-white p-4 mb-3 overflow-hidden flex-shrink-0"
+          >
+            {/* AI Scanner Sweep */}
+            <motion.div
+              initial={{ y: '-100%' }}
+              animate={stage === 0 ? { y: '300%' } : { y: '-100%' }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'linear', delay: 0.3 }}
+              className="absolute inset-x-0 h-8 bg-gradient-to-b from-transparent via-rose-400/40 to-transparent pointer-events-none"
+            />
+
+            {/* Red Pulse Glow */}
+            <motion.div
+              animate={{ opacity: [0.2, 0.5, 0.2], scale: [1, 1.05, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute inset-0 rounded-xl bg-rose-500/10 pointer-events-none"
+            />
+
+            <div className="relative flex items-start justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-white flex items-center justify-center text-xs font-bold">
+                  AR
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-ink-900">Aisha Rahman</p>
+                  <p className="text-[10px] text-ink-500">Transaction #TXN-8421</p>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <p className="text-xs font-bold text-ink-900">{row.amt}</p>
-                {row.state === 'recovered' ? (
-                  <svg className="w-3.5 h-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+
+              {/* Warning Indicator */}
+              <motion.div
+                animate={{ scale: [1, 1.15, 1] }}
+                transition={{ duration: 1.2, repeat: Infinity }}
+                className="relative"
+              >
+                <div className="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center">
+                  <svg className="w-3.5 h-3.5 text-rose-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
                   </svg>
-                ) : row.state === 'retrying' ? (
-                  <motion.svg
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-                    className="w-3.5 h-3.5 text-amber-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2.5}
-                  >
+                </div>
+                <motion.div
+                  animate={{ scale: [1, 2, 1], opacity: [0.5, 0, 0.5] }}
+                  transition={{ duration: 1.2, repeat: Infinity }}
+                  className="absolute inset-0 rounded-full border border-rose-400"
+                />
+              </motion.div>
+            </div>
+
+            <div className="relative flex items-center justify-between">
+              <p className="text-base font-bold text-ink-900">RM 540.00</p>
+              {/* Status Morph */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="relative h-5 w-20 overflow-hidden"
+              >
+                <motion.span
+                  initial={{ y: 0 }}
+                  animate={{ y: -20 }}
+                  transition={{ delay: 1, duration: 0.4 }}
+                  className="absolute inset-x-0 text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full text-center"
+                >
+                  Processing
+                </motion.span>
+                <motion.span
+                  initial={{ y: 20 }}
+                  animate={{ y: 0 }}
+                  transition={{ delay: 1, duration: 0.4 }}
+                  className="absolute inset-x-0 text-[10px] font-bold text-rose-700 bg-rose-100 px-2 py-0.5 rounded-full text-center"
+                >
+                  Failed
+                </motion.span>
+              </motion.div>
+            </div>
+
+            <div className="relative mt-2 text-[10px] text-ink-500 flex items-center gap-1.5">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Insufficient funds · Card declined
+            </div>
+          </motion.div>
+
+          {/* Radar Scan with AI Detection */}
+          <div className="relative flex-1 flex items-center justify-center mb-2">
+            <div className="relative w-24 h-24">
+              {/* Radar rings */}
+              {[0, 0.5, 1, 1.5].map((delay, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ scale: 0, opacity: 0.8 }}
+                  animate={stage === 0 ? { scale: 2.5, opacity: 0 } : {}}
+                  transition={{ duration: 2, delay, repeat: Infinity }}
+                  className="absolute inset-0 rounded-full border-2 border-rose-400 pointer-events-none"
+                />
+              ))}
+
+              {/* Radar sweep beam */}
+              <motion.div
+                animate={stage === 0 ? { rotate: 360 } : {}}
+                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                className="absolute inset-0 rounded-full overflow-hidden"
+                style={{
+                  background: 'conic-gradient(from 0deg, transparent 0deg, rgba(244, 63, 94, 0.3) 60deg, transparent 90deg)',
+                }}
+              />
+
+              {/* Center AI badge */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500 to-rose-700 flex items-center justify-center text-white text-[10px] font-bold shadow-lg"
+                >
+                  AI
+                </motion.div>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-[10px] text-center text-ink-500 flex-shrink-0">
+            <motion.span
+              animate={{ opacity: [1, 0.4, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="inline-flex items-center gap-1.5"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+              Scanning failure pattern · Preparing recovery
+            </motion.span>
+          </p>
+        </motion.div>
+
+        {/* Stage 2: Automated Recovery Workflow */}
+        <motion.div
+          initial={{ opacity: 0, x: 400 }}
+          animate={{ opacity: stage === 1 ? 1 : 0, x: stage === 1 ? 0 : stage > 1 ? -400 : 400 }}
+          transition={{ duration: 0.6, ease: 'easeInOut' }}
+          className="absolute inset-0 p-5 flex flex-col overflow-hidden"
+        >
+          <div className="flex items-center justify-between mb-3 flex-shrink-0">
+            <span className="text-xs font-semibold text-ink-500 uppercase tracking-wider">Recovery Workflow</span>
+            <div className="flex gap-1">
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <div className="w-2 h-2 rounded-full bg-brand-600" />
+              <div className="w-2 h-2 rounded-full bg-ink-200" />
+            </div>
+          </div>
+
+          <div className="flex-1 relative">
+            {/* Connecting line SVG */}
+            <svg className="absolute left-3 top-1 w-px h-full" style={{ overflow: 'visible' }}>
+              <motion.line
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="100%"
+                stroke="url(#wf-grad)"
+                strokeWidth="2"
+                strokeDasharray="3 3"
+                initial={{ pathLength: 0 }}
+                animate={stage === 1 ? { pathLength: 1 } : { pathLength: 0 }}
+                transition={{ duration: 2, delay: 0.3 }}
+              />
+              <defs>
+                <linearGradient id="wf-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#f43f5e" />
+                  <stop offset="50%" stopColor="#1b77f6" />
+                  <stop offset="100%" stopColor="#10b981" />
+                </linearGradient>
+              </defs>
+            </svg>
+
+            {[
+              {
+                title: 'Payment Failed',
+                detail: 'Detection at 14:32',
+                nodeBg: 'bg-rose-100',
+                nodeRing: 'border-rose-400',
+                checkColor: 'text-rose-500',
+                icon: (
+                  <svg className="w-3 h-3 text-rose-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                ),
+              },
+              {
+                title: 'WhatsApp Reminder',
+                detail: 'Sent · Read receipt',
+                nodeBg: 'bg-emerald-100',
+                nodeRing: 'border-emerald-400',
+                checkColor: 'text-emerald-500',
+                icon: (
+                  <svg className="w-3 h-3 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347" />
+                  </svg>
+                ),
+              },
+              {
+                title: 'Smart Retry Scheduled',
+                detail: 'In 2 hours · Optimal time',
+                nodeBg: 'bg-brand-100',
+                nodeRing: 'border-brand-400',
+                checkColor: 'text-brand-600',
+                icon: (
+                  <svg className="w-3 h-3 text-brand-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </motion.svg>
-                ) : (
-                  <svg className="w-3.5 h-3.5 text-ink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                )}
+                ),
+              },
+              {
+                title: 'Alternative Method',
+                detail: 'FPX suggested · AI choice',
+                nodeBg: 'bg-cyan-100',
+                nodeRing: 'border-cyan-400',
+                checkColor: 'text-cyan-500',
+                icon: (
+                  <svg className="w-3 h-3 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                ),
+              },
+            ].map((step, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -30 }}
+                animate={stage === 1 ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
+                transition={{ delay: 0.5 + i * 0.4, duration: 0.5 }}
+                className="relative flex items-center gap-3 mb-2.5"
+              >
+                {/* Workflow node with pulse */}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={stage === 1 ? { scale: 1 } : { scale: 0 }}
+                  transition={{ delay: 0.5 + i * 0.4, type: 'spring' }}
+                  className={`relative w-6 h-6 rounded-full ${step.nodeBg} border-2 border-white flex items-center justify-center flex-shrink-0 shadow-sm z-10`}
+                >
+                  {step.icon}
+                  {/* Retry pulse */}
+                  <motion.div
+                    animate={{ scale: [1, 1.8, 1], opacity: [0.4, 0, 0.4] }}
+                    transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 + i * 0.4 }}
+                    className={`absolute inset-0 rounded-full border ${step.nodeRing}`}
+                  />
+                </motion.div>
+
+                {/* Step content */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={stage === 1 ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+                  transition={{ delay: 0.6 + i * 0.4 }}
+                  className="flex-1 px-2.5 py-1.5 rounded-lg bg-ink-50/60 border border-ink-100 flex items-center justify-between min-w-0"
+                >
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold text-ink-900 leading-tight truncate">{step.title}</p>
+                    <p className="text-[9px] text-ink-500 leading-tight truncate">{step.detail}</p>
+                  </div>
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={stage === 1 ? { scale: 1 } : { scale: 0 }}
+                    transition={{ delay: 0.8 + i * 0.4, type: 'spring' }}
+                    className="flex-shrink-0"
+                  >
+                    <svg className={`w-3 h-3 ${step.checkColor}`} fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </motion.div>
+                </motion.div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* AI Decision Glow Footer */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={stage === 1 ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ delay: 2.4 }}
+            className="flex items-center justify-center gap-1.5 flex-shrink-0 mt-1"
+          >
+            <motion.div
+              animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="w-1.5 h-1.5 rounded-full bg-brand-600"
+            />
+            <p className="text-[10px] font-semibold text-brand-700">AI orchestrating recovery</p>
+          </motion.div>
+        </motion.div>
+
+        {/* Stage 3: Recovery Success & Analytics */}
+        <motion.div
+          initial={{ opacity: 0, x: 400 }}
+          animate={{ opacity: stage === 2 ? 1 : 0, x: stage === 2 ? 0 : 400 }}
+          transition={{ duration: 0.6, ease: 'easeInOut' }}
+          className="absolute inset-0 p-5 flex flex-col overflow-hidden"
+        >
+          <div className="flex items-center justify-between mb-3 flex-shrink-0">
+            <span className="text-xs font-semibold text-ink-500 uppercase tracking-wider">Recovery Analytics</span>
+            <div className="flex gap-1">
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+            </div>
+          </div>
+
+          {/* Success Glow Background */}
+          <motion.div
+            animate={stage === 2 ? { opacity: [0, 0.4, 0.2] } : { opacity: 0 }}
+            transition={{ duration: 2 }}
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'radial-gradient(circle at 50% 40%, rgba(16, 185, 129, 0.25) 0%, transparent 60%)',
+            }}
+          />
+
+          <div className="grid grid-cols-2 gap-2 mb-2.5 flex-shrink-0">
+            {/* Revenue Restored Counter */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={stage === 2 ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+              transition={{ delay: 0.2 }}
+              className="relative p-2.5 rounded-xl bg-gradient-to-br from-emerald-50 to-white border border-emerald-200 overflow-hidden"
+            >
+              <motion.div
+                animate={{ x: ['-100%', '200%'] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }}
+                className="absolute inset-y-0 w-1/3 bg-white/40 skew-x-12 pointer-events-none"
+              />
+              <p className="text-[9px] font-semibold text-emerald-700 uppercase tracking-wider">Recovered</p>
+              <p className="text-base font-bold text-ink-900 tabular-nums">
+                RM {recoveredAmount.toLocaleString()}
+              </p>
+              <p className="text-[9px] text-ink-500">+24 transactions</p>
+            </motion.div>
+
+            {/* Animated Donut Chart */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={stage === 2 ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+              transition={{ delay: 0.3 }}
+              className="p-2 rounded-xl bg-gradient-to-br from-brand-50 to-white border border-brand-100 flex items-center gap-2"
+            >
+              <div className="relative w-12 h-12 flex-shrink-0">
+                <svg className="w-12 h-12 -rotate-90" viewBox="0 0 36 36">
+                  <circle cx="18" cy="18" r="14" fill="none" stroke="#e5e7eb" strokeWidth="3" />
+                  <motion.circle
+                    cx="18"
+                    cy="18"
+                    r="14"
+                    fill="none"
+                    stroke="url(#donut-grad)"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeDasharray={`${(recoveryPercent / 100) * 88} 88`}
+                  />
+                  <defs>
+                    <linearGradient id="donut-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#1b77f6" />
+                      <stop offset="100%" stopColor="#10b981" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <p className="text-[10px] font-bold text-ink-900 tabular-nums">{recoveryPercent}%</p>
+                </div>
+              </div>
+              <div className="min-w-0">
+                <p className="text-[9px] font-semibold text-brand-700 uppercase tracking-wider">Success Rate</p>
+                <p className="text-[10px] text-ink-500">vs 62% avg</p>
               </div>
             </motion.div>
-          ))}
-        </div>
+          </div>
+
+          {/* Mini Analytics Chart */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={stage === 2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+            transition={{ delay: 0.5 }}
+            className="p-2.5 rounded-xl bg-white border border-ink-100 mb-2 flex-shrink-0"
+          >
+            <div className="flex items-center justify-between mb-1.5">
+              <p className="text-[10px] font-bold text-ink-900">Recovery Trend</p>
+              <div className="flex items-center gap-1 text-emerald-600">
+                <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                </svg>
+                <p className="text-[9px] font-bold">+38%</p>
+              </div>
+            </div>
+            <svg className="w-full h-10" viewBox="0 0 200 40" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="chart-fill" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#10b981" stopOpacity="0.4" />
+                  <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <motion.path
+                d="M 0 32 L 20 28 L 40 30 L 60 22 L 80 24 L 100 18 L 120 14 L 140 16 L 160 10 L 180 8 L 200 4 L 200 40 L 0 40 Z"
+                fill="url(#chart-fill)"
+                initial={{ opacity: 0 }}
+                animate={stage === 2 ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ delay: 1.2, duration: 0.5 }}
+              />
+              <motion.path
+                d="M 0 32 L 20 28 L 40 30 L 60 22 L 80 24 L 100 18 L 120 14 L 140 16 L 160 10 L 180 8 L 200 4"
+                fill="none"
+                stroke="#10b981"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={{ pathLength: 0 }}
+                animate={stage === 2 ? { pathLength: 1 } : { pathLength: 0 }}
+                transition={{ delay: 0.8, duration: 1.2, ease: 'easeOut' }}
+              />
+              {/* Data pulse points */}
+              {[20, 60, 100, 140, 180].map((x, i) => (
+                <motion.circle
+                  key={i}
+                  cx={x}
+                  cy={[28, 22, 18, 16, 8][i]}
+                  r="1.5"
+                  fill="#10b981"
+                  initial={{ scale: 0 }}
+                  animate={stage === 2 ? { scale: [0, 1.5, 1] } : { scale: 0 }}
+                  transition={{ delay: 1.5 + i * 0.1 }}
+                />
+              ))}
+            </svg>
+          </motion.div>
+
+          {/* AI Recommendation Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={stage === 2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+            transition={{ delay: 1.8 }}
+            className="relative p-2 rounded-lg bg-gradient-to-r from-brand-50 to-emerald-50 border border-brand-200 flex items-center gap-2 flex-shrink-0 overflow-hidden"
+          >
+            <motion.div
+              animate={{ x: ['-100%', '200%'] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+              className="absolute inset-y-0 w-1/4 bg-white/50 skew-x-12 pointer-events-none"
+            />
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="relative w-6 h-6 rounded-full bg-gradient-to-br from-brand-500 to-emerald-500 flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0"
+            >
+              AI
+            </motion.div>
+            <div className="relative min-w-0">
+              <p className="text-[10px] font-bold text-ink-900 leading-tight truncate">AI Recommendation</p>
+              <p className="text-[9px] text-ink-600 leading-tight truncate">Retry at 6PM for 92% success</p>
+            </div>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   )
