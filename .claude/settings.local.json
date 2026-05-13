@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.pinelabs.com)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(rm -f Features.jsx InfiniteSlider.jsx ReviewsCarousel.jsx ScrollableCardStack.jsx MotionCarousel.jsx)",
+      "Read(//d/d/Projects/RP/**)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(mkdir -p \"D:\\\\Projects\\\\RP\\\\public\" && cp \"C:\\\\Users\\\\GANDHI\\\\Downloads\\\\RP-Logo-01-1.svg\" \"D:\\\\Projects\\\\RP\\\\public\\\\ringgitpay-logo.svg\" && ls \"D:\\\\Projects\\\\RP\\\\public\\\\\")"
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <circle cx="60" cy="60" r="57" fill="white" stroke="#E8E8E8" stroke-width="1"/>
+
+  <!-- Left chevron - Light Blue -->
+  <polygon points="35,45 50,60 35,75 45,75 60,60 45,45" fill="#0099E6"/>
+
+  <!-- Right chevron - Dark Blue -->
+  <polygon points="55,45 70,60 55,75 65,75 80,60 65,45" fill="#002D5A"/>
+</svg>

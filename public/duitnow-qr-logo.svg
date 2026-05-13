@@ -1,0 +1,13 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <circle cx="60" cy="60" r="57" fill="#E91E63"/>
+
+  <!-- White D logo -->
+  <g>
+    <!-- Vertical bar -->
+    <rect x="35" y="28" width="12" height="64" rx="2" fill="white"/>
+    <!-- Curved part -->
+    <path d="M 47 28 Q 75 28 75 60 Q 75 92 47 92" fill="none" stroke="white" stroke-width="12" stroke-linecap="round"/>
+    <!-- Inner cutout circle -->
+    <circle cx="52" cy="60" r="14" fill="#E91E63"/>
+  </g>
+</svg>

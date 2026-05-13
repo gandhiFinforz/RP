@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #ffffff;
+  color: #0a0e27;
+  letter-spacing: -0.011em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+
+.display-text {
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+/* Subtle grid background */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(10, 41, 71, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 41, 71, 0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* Dot pattern */
+.dot-pattern {
+  background-image: radial-gradient(circle, rgba(27, 119, 246, 0.18) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Glowing orb */
+.glow-blue {
+  background: radial-gradient(circle, rgba(27, 119, 246, 0.4) 0%, rgba(27, 119, 246, 0) 70%);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #0a2947 0%, #1361d4 50%, #1b77f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Shimmer + glow gradient for hero accent word */
+@keyframes shimmer-sweep {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+@keyframes shimmer-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 18px rgba(27, 119, 246, 0.35))
+            drop-shadow(0 0 4px rgba(90, 158, 251, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 32px rgba(27, 119, 246, 0.65))
+            drop-shadow(0 0 8px rgba(90, 158, 251, 0.7));
+  }
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    100deg,
+    #143f7f 0%,
+    #1361d4 22%,
+    #1b77f6 38%,
+    #8bbeff 48%,
+    #ffffff 50%,
+    #8bbeff 52%,
+    #1b77f6 62%,
+    #1361d4 78%,
+    #143f7f 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+  animation: shimmer-sweep 10s linear infinite, shimmer-glow 8s ease-in-out infinite;
+  will-change: background-position, filter;
+}
+
+/* Marquee */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.marquee {
+  animation: marquee 30s linear infinite;
+}
+
+/* Pulse */
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+.pulse-ring {
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #1b77f6;
+}
+
+/* Section padding */
+.section-pad {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+@media (max-width: 768px) {
+  .section-pad {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+}
+
+/* Card hover lift */
+.card-lift {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -10px rgba(20, 63, 127, 0.15);
+}
+
+/* Hole / spotlight effect */
+.spotlight {
+  background: radial-gradient(ellipse 80% 50% at 50% 0%,
+    rgba(27, 119, 246, 0.15),
+    transparent 70%);
+}
