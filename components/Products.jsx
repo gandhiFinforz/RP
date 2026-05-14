@@ -108,7 +108,15 @@ export default function Products() {
 
     const onScroll = () => {
       if (!tickingRef.current) {
-        window.requestAnimationFrame(update)
+        window.requestAnimationFrame(() => {
+          // If we are locked or the wheel listener is active, don't let 
+          // natural scroll update the active index as it causes jumping.
+          if (Date.now() < lockUntilRef.current) {
+            tickingRef.current = false
+            return
+          }
+          update()
+        })
         tickingRef.current = true
       }
     }
@@ -128,22 +136,32 @@ export default function Products() {
     const STAGE_LOCK_MS = 1000
 
     const isProductsInView = () => {
-      const el = document.getElementById('products')
-      if (!el) return false
-      const rect = el.getBoundingClientRect()
-      const viewportCenter = window.innerHeight / 2
-      return rect.top <= viewportCenter && rect.bottom >= viewportCenter
+      const container = document.getElementById('products')
+      if (!container) return false
+      const rect = container.getBoundingClientRect()
+      
+      // If we are at the very top of the section (header), let it scroll normally
+      if (rect.top > -50) return false
+      
+      // If we've scrolled past the entire section, let it scroll normally
+      if (rect.bottom < window.innerHeight / 2) return false
+      
+      return true
     }
 
     const snapTo = (idx, { startAtEnd = false } = {}) => {
       const target = sectionRefs.current[idx]
       if (!target) return
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      const initialStage = startAtEnd ? STAGE_COUNTS[idx] - 1 : 0
-      setStageAt(idx, initialStage)
-      const pauseTime = idx === 0 ? 2000 : PAUSE_MS
+      
+      const pauseTime = 1400 // Slightly longer for product transitions
       lockUntilRef.current = Date.now() + pauseTime
       setIsLocked(true)
+      
+      setActiveIndex(idx)
+      setStageAt(idx, startAtEnd ? STAGE_COUNTS[idx] - 1 : 0)
+      
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      
       setTimeout(() => setIsLocked(false), pauseTime)
     }
 
@@ -159,6 +177,8 @@ export default function Products() {
     const handleDirection = (e, direction) => {
       if (!isProductsInView()) return
       const now = Date.now()
+      
+      // If we are currently transitioning/locked, always block the wheel
       if (now < lockUntilRef.current) {
         e.preventDefault()
         return
@@ -169,23 +189,41 @@ export default function Products() {
       const maxStage = STAGE_COUNTS[idx] - 1
 
       if (direction > 0) {
+        // SCROLL DOWN
+        // If we are at the very start of the first product and haven't snapped yet, snap to it
+        if (idx === 0 && currentStage === 0 && !isLocked) {
+          const rect = sectionRefs.current[0].getBoundingClientRect()
+          if (Math.abs(rect.top) > 10) { // If not perfectly aligned
+            e.preventDefault()
+            snapTo(0)
+            return
+          }
+        }
+
         if (currentStage < maxStage) {
           advanceStage(e, 1)
           return
         }
         const next = idx + 1
-        if (next >= products.length) return
+        if (next >= products.length) {
+          // Let it scroll out of the section
+          return
+        }
         e.preventDefault()
         snapTo(next, { startAtEnd: false })
         return
       }
 
+      // SCROLL UP
       if (currentStage > 0) {
         advanceStage(e, -1)
         return
       }
       const next = idx - 1
-      if (next < 0) return
+      if (next < 0) {
+        // Let it scroll back to header
+        return
+      }
       e.preventDefault()
       snapTo(next, { startAtEnd: true })
     }

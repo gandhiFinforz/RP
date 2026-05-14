@@ -3,7 +3,20 @@
 import { motion } from 'framer-motion'
 import { useRef, useEffect } from 'react'
 
-const BG = '#080d1a'
+const BG = '#03060d'
+
+// CSS for the component-specific background effects
+const trustBarStyles = `
+  @keyframes aurora-drift {
+    0% { transform: scale(1) translate(0, 0); }
+    50% { transform: scale(1.1) translate(2%, 2%); }
+    100% { transform: scale(1) translate(-1%, 1%); }
+  }
+  @keyframes sparkle-pulse {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.3; }
+  }
+`
 
 const CARD_SHADOW = `
   0 0 0 1px rgba(255,255,255,0.05),
@@ -46,6 +59,7 @@ const colVariants = {
 export default function TrustBar() {
   return (
     <section className="py-12 px-6 lg:px-16" style={{ perspective: '1400px' }}>
+      <style>{trustBarStyles}</style>
       <motion.div
         initial={{ opacity: 0, y: 64, scale: 0.95, rotateX: 10 }}
         whileInView={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
@@ -54,6 +68,38 @@ export default function TrustBar() {
         style={{ background: BG, boxShadow: CARD_SHADOW, transformStyle: 'preserve-3d' }}
         className="relative rounded-[2.5rem] overflow-hidden py-10"
       >
+        {/* Animated Background Orbs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div 
+            className="absolute -top-1/2 -left-1/4 w-full h-full rounded-full opacity-20 blur-[100px]"
+            style={{ 
+              background: 'radial-gradient(circle, #1b77f6 0%, transparent 70%)',
+              animation: 'aurora-drift 15s infinite alternate ease-in-out' 
+            }}
+          />
+          <div 
+            className="absolute -bottom-1/2 -right-1/4 w-full h-full rounded-full opacity-20 blur-[100px]"
+            style={{ 
+              background: 'radial-gradient(circle, #06b6d4 0%, transparent 70%)',
+              animation: 'aurora-drift 20s infinite alternate-reverse ease-in-out' 
+            }}
+          />
+        </div>
+
+        {/* Sparkle Overlay */}
+        <div 
+          className="absolute inset-0 opacity-20 pointer-events-none"
+          style={{ 
+            backgroundImage: `
+              radial-gradient(1px 1px at 10% 20%, white 100%, transparent),
+              radial-gradient(1px 1px at 30% 50%, white 100%, transparent),
+              radial-gradient(1.5px 1.5px at 70% 30%, white 100%, transparent),
+              radial-gradient(1px 1px at 90% 80%, white 100%, transparent)
+            `,
+            backgroundSize: '250px 250px',
+            animation: 'sparkle-pulse 6s infinite alternate'
+          }}
+        />
         {/* Gloss reflection */}
         <div
           className="absolute inset-x-0 top-0 h-32 pointer-events-none z-20 rounded-t-[2.5rem]"

@@ -9,16 +9,24 @@ const navItems = [
     items: ['Online Payments', 'POS Terminals', 'Payment Links', 'Subscriptions', 'Payouts']
   },
   {
-    label: 'Solutions',
-    items: ['E-commerce', 'Retail', 'SaaS', 'Marketplace', 'Enterprise']
+    label: 'Partners',
+    items: [] // No submenu requested
   },
   {
-    label: 'Developers',
-    items: ['API Reference', 'SDKs', 'Documentation', 'Integrations']
+    label: 'Pricing',
+    items: [] // No submenu requested
   },
   {
-    label: 'Company',
-    items: ['About', 'Careers', 'Press', 'Contact']
+    label: 'Support',
+    items: [] // No submenu requested
+  },
+  {
+    label: 'Resources',
+    items: ['Blogs', 'Events']
+  },
+  {
+    label: 'About Us',
+    items: [] // No submenu requested
   },
 ]
 
@@ -66,12 +74,14 @@ export default function Navbar() {
               >
                 <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-ink-700 hover:text-brand-700 transition rounded-lg">
                   {item.label}
-                  <svg className="w-3.5 h-3.5 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                  </svg>
+                  {item.items.length > 0 && (
+                    <svg className="w-3.5 h-3.5 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  )}
                 </button>
 
-                {openDropdown === item.label && (
+                {openDropdown === item.label && item.items.length > 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -96,7 +106,7 @@ export default function Navbar() {
           {/* Right side */}
           <div className="hidden lg:flex items-center gap-3">
             <a href="#" className="text-sm font-medium text-ink-700 hover:text-brand-700 transition">
-              Sign in
+              Login
             </a>
             <motion.a
               href="#"
@@ -104,7 +114,7 @@ export default function Navbar() {
               whileTap={{ scale: 0.98 }}
               className="px-5 py-2.5 bg-ink-900 text-white text-sm font-semibold rounded-full hover:bg-brand-700 transition flex items-center gap-1.5"
             >
-              Contact sales
+              Sign Up
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
