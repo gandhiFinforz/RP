@@ -1348,7 +1348,7 @@ function RecurringBillingFlowVisual({ stage: externalStage = 0, autoCycle = fals
                     </svg>
                   </motion.div>
                   <div>
-                    <p className="text-sm font-semibold text-ink-900">UPI AutoPay Mandate</p>
+                    <p className="text-sm font-semibold text-ink-900">AutoPay Mandate</p>
                     <p className="text-xs text-ink-600">Secure authorization</p>
                   </div>
                 </div>
