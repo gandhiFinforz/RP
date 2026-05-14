@@ -100,15 +100,30 @@ h1, h2, h3, h4, h5, h6 {
   will-change: background-position, filter;
 }
 
-/* Marquee */
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+/* Vertical partner scroll */
+@keyframes scroll-down {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
 }
 
-.marquee {
-  animation: marquee 30s linear infinite;
+@keyframes scroll-up {
+  from { transform: translateY(-50%); }
+  to   { transform: translateY(0); }
 }
+
+.scroll-down       { animation: scroll-down 14s linear infinite; }
+.scroll-up         { animation: scroll-up   18s linear infinite; }
+.scroll-down-fast  { animation: scroll-down 10s linear infinite; }
+
+.scroll-down:hover,
+.scroll-up:hover,
+.scroll-down-fast:hover {
+  animation-play-state: paused;
+}
+
+/* Hide scrollbar but keep scroll behaviour */
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
 
 /* Pulse */
 @keyframes pulse-ring {
