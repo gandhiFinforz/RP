@@ -46,22 +46,10 @@ const STAGE_COUNTS = [5, 5, 4, 3] // collect, billing, pages, recovery
 
 export default function Products() {
   const [activeIndex, setActiveIndex] = useState(0)
-  const [isLocked, setIsLocked] = useState(false)
   const [stages, setStages] = useState([0, 0, 0, 0])
   const sectionRefs = useRef([])
   const tickingRef = useRef(false)
-  const activeIndexRef = useRef(0)
   const stagesRef = useRef([0, 0, 0, 0])
-  const lockUntilRef = useRef(0)
-
-  // Keep refs in sync with state for the scroll handler
-  useEffect(() => {
-    activeIndexRef.current = activeIndex
-  }, [activeIndex])
-
-  useEffect(() => {
-    stagesRef.current = stages
-  }, [stages])
 
   const setStageAt = (idx, newStage) => {
     setStages((prev) => {
@@ -70,182 +58,54 @@ export default function Products() {
       next[idx] = newStage
       return next
     })
-    stagesRef.current = [...stagesRef.current]
     stagesRef.current[idx] = newStage
   }
 
-  // Initial hold: 2 seconds for first product, 1 second for others
-  useEffect(() => {
-    const FIRST_PRODUCT_PAUSE = 2000
-    const OTHER_PRODUCT_PAUSE = 1000
-    const pauseTime = activeIndex === 0 ? FIRST_PRODUCT_PAUSE : OTHER_PRODUCT_PAUSE
-    lockUntilRef.current = Date.now() + pauseTime
-    setIsLocked(true)
-    const timer = setTimeout(() => setIsLocked(false), pauseTime)
-    return () => clearTimeout(timer)
-  }, [activeIndex])
-
+  // Scroll-driven: activeIndex + stages are derived purely from scroll position.
+  // No wheel interception — the user scrolls naturally and everything follows.
   useEffect(() => {
     const update = () => {
-      const viewportCenter = window.innerHeight / 2
+      const vh = window.innerHeight
+
       let closestIdx = 0
-      let closestDist = Infinity
+      let minDist = Infinity
 
       sectionRefs.current.forEach((ref, idx) => {
         if (!ref) return
         const rect = ref.getBoundingClientRect()
-        const sectionCenter = rect.top + rect.height / 2
-        const dist = Math.abs(sectionCenter - viewportCenter)
-        if (dist < closestDist) {
-          closestDist = dist
-          closestIdx = idx
-        }
+        const dist = Math.abs(rect.top + rect.height / 2 - vh / 2)
+        if (dist < minDist) { minDist = dist; closestIdx = idx }
       })
 
       setActiveIndex(closestIdx)
+
+      // Drive the stage for the closest section from how far it has entered
+      // the viewport from the bottom (0 = just entering, 1 = fully in view).
+      const ref = sectionRefs.current[closestIdx]
+      if (ref) {
+        const rect = ref.getBoundingClientRect()
+        const progress = Math.max(0, Math.min(1, (vh - rect.top) / vh))
+        const max = STAGE_COUNTS[closestIdx] - 1
+        const newStage = Math.round(progress * max)
+        if (stagesRef.current[closestIdx] !== newStage) setStageAt(closestIdx, newStage)
+      }
+
       tickingRef.current = false
     }
 
     const onScroll = () => {
       if (!tickingRef.current) {
-        window.requestAnimationFrame(() => {
-          // If we are locked or the wheel listener is active, don't let 
-          // natural scroll update the active index as it causes jumping.
-          if (Date.now() < lockUntilRef.current) {
-            tickingRef.current = false
-            return
-          }
-          update()
-        })
         tickingRef.current = true
+        window.requestAnimationFrame(update)
       }
     }
 
     update()
     window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
+    window.addEventListener('resize', update)
     return () => {
       window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-    }
-  }, [])
-
-  // Scroll-snap stage navigation across all products
-  useEffect(() => {
-    const PAUSE_MS = 1000
-    const STAGE_LOCK_MS = 1000
-
-    const isProductsInView = () => {
-      const container = document.getElementById('products')
-      if (!container) return false
-      const rect = container.getBoundingClientRect()
-      
-      // If we are at the very top of the section (header), let it scroll normally
-      if (rect.top > -50) return false
-      
-      // If we've scrolled past the entire section, let it scroll normally
-      if (rect.bottom < window.innerHeight / 2) return false
-      
-      return true
-    }
-
-    const snapTo = (idx, { startAtEnd = false } = {}) => {
-      const target = sectionRefs.current[idx]
-      if (!target) return
-      
-      const pauseTime = 1400 // Slightly longer for product transitions
-      lockUntilRef.current = Date.now() + pauseTime
-      setIsLocked(true)
-      
-      setActiveIndex(idx)
-      setStageAt(idx, startAtEnd ? STAGE_COUNTS[idx] - 1 : 0)
-      
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      
-      setTimeout(() => setIsLocked(false), pauseTime)
-    }
-
-    const advanceStage = (e, delta) => {
-      e.preventDefault()
-      const idx = activeIndexRef.current
-      setStageAt(idx, stagesRef.current[idx] + delta)
-      lockUntilRef.current = Date.now() + STAGE_LOCK_MS
-      setIsLocked(true)
-      setTimeout(() => setIsLocked(false), STAGE_LOCK_MS)
-    }
-
-    const handleDirection = (e, direction) => {
-      if (!isProductsInView()) return
-      const now = Date.now()
-      
-      // If we are currently transitioning/locked, always block the wheel
-      if (now < lockUntilRef.current) {
-        e.preventDefault()
-        return
-      }
-
-      const idx = activeIndexRef.current
-      const currentStage = stagesRef.current[idx]
-      const maxStage = STAGE_COUNTS[idx] - 1
-
-      if (direction > 0) {
-        // SCROLL DOWN
-        // If we are at the very start of the first product and haven't snapped yet, snap to it
-        if (idx === 0 && currentStage === 0 && !isLocked) {
-          const rect = sectionRefs.current[0].getBoundingClientRect()
-          if (Math.abs(rect.top) > 10) { // If not perfectly aligned
-            e.preventDefault()
-            snapTo(0)
-            return
-          }
-        }
-
-        if (currentStage < maxStage) {
-          advanceStage(e, 1)
-          return
-        }
-        const next = idx + 1
-        if (next >= products.length) {
-          // Let it scroll out of the section
-          return
-        }
-        e.preventDefault()
-        snapTo(next, { startAtEnd: false })
-        return
-      }
-
-      // SCROLL UP
-      if (currentStage > 0) {
-        advanceStage(e, -1)
-        return
-      }
-      const next = idx - 1
-      if (next < 0) {
-        // Let it scroll back to header
-        return
-      }
-      e.preventDefault()
-      snapTo(next, { startAtEnd: true })
-    }
-
-    const handleWheel = (e) => {
-      const direction = e.deltaY > 0 ? 1 : -1
-      handleDirection(e, direction)
-    }
-
-    const handleKey = (e) => {
-      let direction = 0
-      if (['ArrowDown', 'PageDown', ' '].includes(e.key)) direction = 1
-      else if (['ArrowUp', 'PageUp'].includes(e.key)) direction = -1
-      else return
-      handleDirection(e, direction)
-    }
-
-    window.addEventListener('wheel', handleWheel, { passive: false })
-    window.addEventListener('keydown', handleKey)
-    return () => {
-      window.removeEventListener('wheel', handleWheel)
-      window.removeEventListener('keydown', handleKey)
+      window.removeEventListener('resize', update)
     }
   }, [])
 
@@ -502,13 +362,7 @@ function PaymentPagesFlowVisual({ stage: externalStage = 0, autoCycle = false })
   const [revenueCount, setRevenueCount] = useState(0)
   const [tickerItems, setTickerItems] = useState([])
 
-  useEffect(() => {
-    if (!autoCycle) return
-    const timer = setInterval(() => {
-      setInternalStage((prev) => (prev < 3 ? prev + 1 : 0))
-    }, 5500)
-    return () => clearInterval(timer)
-  }, [autoCycle])
+  // Auto-cycle disabled: strictly manual progression
 
   // Copy ripple effect on stage 2
   useEffect(() => {
@@ -576,8 +430,8 @@ function PaymentPagesFlowVisual({ stage: externalStage = 0, autoCycle = false })
   }, [stage])
 
   return (
-    <div className="w-full max-w-sm overflow-hidden">
-      <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-lg relative h-96">
+    <div className="w-full max-w-sm overflow-hidden rounded-2xl">
+      <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-lg relative h-96 overflow-hidden">
         {/* Stage 1: Create Payment Page */}
         <motion.div
           initial={{ opacity: 0, x: 400 }}
@@ -1214,13 +1068,7 @@ function RecurringBillingFlowVisual({ stage: externalStage = 0, autoCycle = fals
   const stage = autoCycle ? internalStage : externalStage
   const [confetti, setConfetti] = useState([])
 
-  useEffect(() => {
-    if (!autoCycle) return
-    const timer = setInterval(() => {
-      setInternalStage((prev) => (prev < 4 ? prev + 1 : 0))
-    }, 4000)
-    return () => clearInterval(timer)
-  }, [autoCycle])
+  // Auto-cycle disabled: progression strictly scroll-based
 
   useEffect(() => {
     if (stage === 4) {
@@ -1234,8 +1082,8 @@ function RecurringBillingFlowVisual({ stage: externalStage = 0, autoCycle = fals
   }, [stage])
 
   return (
-    <div className="w-full max-w-sm overflow-hidden">
-      <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-lg relative h-96">
+    <div className="w-full max-w-sm overflow-hidden rounded-2xl">
+      <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-lg relative h-96 overflow-hidden">
         {/* Stage 1: Subscription Plan Setup */}
         <motion.div
           initial={{ opacity: 0, x: 400 }}
@@ -1735,8 +1583,8 @@ function PaymentFlowVisual({ paymentFlowStage = 0, setPaymentFlowStage }) {
   }, [stage])
 
   return (
-    <div className="w-full max-w-sm overflow-hidden">
-      <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-lg relative h-96">
+    <div className="w-full max-w-sm overflow-hidden rounded-2xl">
+      <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-lg relative h-96 overflow-hidden">
         {/* Stage 1: WhatsApp Message */}
         <motion.div
           initial={{ x: 400, opacity: 0 }}
@@ -1763,8 +1611,10 @@ function PaymentFlowVisual({ paymentFlowStage = 0, setPaymentFlowStage }) {
               className="bg-green-50 rounded-2xl p-4 border border-green-200"
             >
               <div className="flex items-start gap-3 mb-4">
-                <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                  RP
+                <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white flex-shrink-0">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12.031 2C6.731 2 2.431 6.3 2.431 11.6c0 1.7.4 3.3 1.2 4.7l-1.3 4.8 4.9-1.3c1.4.8 2.9 1.2 4.5 1.2 5.3 0 9.6-4.3 9.6-9.6 0-5.3-4.3-9.4-9.6-9.4zm5.1 12.9c-.2.3-.9.6-1.3.6-.3 0-.6.1-1.7-.3-1.1-.4-2.2-.9-3-1.7-.8-.8-1.3-1.8-1.7-2.9-.1-.3-.2-.6-.3-.9-.2-1.2.2-1.9.5-2.2.1-.1.3-.2.4-.2.1 0 .2.1.3.2l1.1 1.1c.1.1.2.2.2.3 0 .1-.1.2-.2.3l-.4.5c-.1.1-.2.2-.2.3 0 .1.1.3.2.4.5.8 1.2 1.5 2.1 2.1.1.1.2.1.3.1.1 0 .2-.1.3-.2l.5-.4c.1-.1.2-.2.3-.2.1 0 .2.1.3.2l1.1 1.1c.1.1.1.2.1.3 0 .1-.1.2-.2.3z" />
+                  </svg>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-ink-900 mb-1">RinggitPay</p>
@@ -1791,8 +1641,8 @@ function PaymentFlowVisual({ paymentFlowStage = 0, setPaymentFlowStage }) {
                   whileTap={{ scale: 0.95 }}
                   className="w-full py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
                 >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-9.746 13.925 9.935 9.935 0 001.371 3.855A9.934 9.934 0 0012.012 24c5.465 0 9.93-4.465 9.93-9.93 0-2.585-.994-5.02-2.79-6.841A9.936 9.936 0 0012.051 0" />
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12.031 2C6.731 2 2.431 6.3 2.431 11.6c0 1.7.4 3.3 1.2 4.7l-1.3 4.8 4.9-1.3c1.4.8 2.9 1.2 4.5 1.2 5.3 0 9.6-4.3 9.6-9.6 0-5.3-4.3-9.4-9.6-9.4zm5.1 12.9c-.2.3-.9.6-1.3.6-.3 0-.6.1-1.7-.3-1.1-.4-2.2-.9-3-1.7-.8-.8-1.3-1.8-1.7-2.9-.1-.3-.2-.6-.3-.9-.2-1.2.2-1.9.5-2.2.1-.1.3-.2.4-.2.1 0 .2.1.3.2l1.1 1.1c.1.1.2.2.2.3 0 .1-.1.2-.2.3l-.4.5c-.1.1-.2.2-.2.3 0 .1.1.3.2.4.5.8 1.2 1.5 2.1 2.1.1.1.2.1.3.1.1 0 .2-.1.3-.2l.5-.4c.1-.1.2-.2.3-.2.1 0 .2.1.3.2l1.1 1.1c.1.1.1.2.1.3 0 .1-.1.2-.2.3z" />
                   </svg>
                   Pay via Link
                 </motion.button>
@@ -2088,13 +1938,7 @@ function SmartRecoveryFlowVisual({ stage: externalStage = 0, autoCycle = false }
   const [recoveredAmount, setRecoveredAmount] = useState(0)
   const [recoveryPercent, setRecoveryPercent] = useState(0)
 
-  useEffect(() => {
-    if (!autoCycle) return
-    const timer = setInterval(() => {
-      setInternalStage((prev) => (prev < 2 ? prev + 1 : 0))
-    }, 5500)
-    return () => clearInterval(timer)
-  }, [autoCycle])
+  // Auto-cycle disabled: progression is now strictly scroll-based via the 'stage' prop
 
   // Counter animation for stage 3
   useEffect(() => {
@@ -2119,8 +1963,8 @@ function SmartRecoveryFlowVisual({ stage: externalStage = 0, autoCycle = false }
   }, [stage])
 
   return (
-    <div className="w-full max-w-sm overflow-hidden">
-      <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-lg relative h-96">
+    <div className="w-full max-w-sm overflow-hidden rounded-2xl">
+      <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-lg relative h-96 overflow-hidden">
         {/* Stage 1: Detect Failed Payment */}
         <motion.div
           initial={{ opacity: 0, x: 400 }}
