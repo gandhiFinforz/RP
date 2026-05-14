@@ -36,8 +36,8 @@ export default function Hero() {
               transition={{ duration: 0.7, delay: 0.05 }}
               className="display-text text-5xl md:text-6xl lg:text-7xl xl:text-[4.5rem] font-bold text-ink-900 mb-6"
             >
-              Unified <span className="shimmer-text">payments</span><br />
-              for modern <br className="hidden md:block" />businesses.
+              The <span className="shimmer-text">Ultimate</span> payment <br />
+              platform for Malaysia!
             </motion.h1>
 
             <motion.p
@@ -46,8 +46,7 @@ export default function Hero() {
               transition={{ duration: 0.7, delay: 0.15 }}
               className="text-lg md:text-xl text-ink-600 mb-10 max-w-2xl leading-relaxed"
             >
-              Accept payments online, in-store, and on the go. One platform that scales
-              with your business — from your first sale to your billionth.
+              Deliver a simple payment experience for your customers and get paid promptly.
             </motion.p>
 
             <motion.div

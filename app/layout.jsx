@@ -1,7 +1,7 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'RinggitPay — Unified Payments for Modern Businesses',
+  title: 'The Ultimate payment platform for Malaysia!',
   description: 'Accept payments online, in-store, and on the go. Built for businesses across Malaysia and Southeast Asia.',
 }
 
