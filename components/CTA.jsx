@@ -36,7 +36,7 @@ export default function CTA() {
                   href="#"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="group px-7 py-4 bg-white text-ink-900 rounded-full font-semibold flex items-center justify-center gap-2 hover:bg-brand-50 transition"
+                  className="group px-7 py-4 bg-brand-600 text-white rounded-full font-semibold flex items-center justify-center gap-2 hover:bg-brand-700 transition shadow-lg shadow-brand-600/20"
                 >
                   Create free account
                   <svg className="w-4 h-4 group-hover:translate-x-0.5 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">

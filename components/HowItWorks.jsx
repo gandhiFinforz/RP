@@ -50,7 +50,7 @@ export default function HowItWorks() {
             <motion.a
               href="#"
               whileHover={{ scale: 1.02 }}
-              className="inline-flex items-center gap-2 px-7 py-4 bg-ink-900 text-white rounded-full font-semibold hover:bg-brand-700 transition"
+              className="inline-flex items-center gap-2 px-7 py-4 bg-brand-600 text-white rounded-full font-semibold hover:bg-brand-700 transition"
             >
               Create free account
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -102,7 +102,7 @@ export default function Navbar() {
               href="#"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="px-5 py-2.5 bg-ink-900 text-white text-sm font-semibold rounded-full hover:bg-brand-700 transition flex items-center gap-1.5"
+              className="px-5 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-full hover:bg-brand-700 transition flex items-center gap-1.5"
             >
               Contact sales
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,7 +141,7 @@ export default function Navbar() {
               </a>
             ))}
             <div className="pt-4 px-4">
-              <a href="#" className="block w-full text-center py-3 bg-ink-900 text-white rounded-full font-semibold">
+              <a href="#" className="block w-full text-center py-3 bg-brand-600 text-white rounded-full font-semibold">
                 Contact sales
               </a>
             </div>

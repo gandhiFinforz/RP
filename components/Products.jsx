@@ -473,14 +473,14 @@ function PaymentPagesFlowVisual() {
   }, [stage])
 
   return (
-    <div className="w-full max-w-sm overflow-hidden">
-      <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-lg relative h-96">
+    <div className="w-full max-w-sm">
+      <div className="bg-white rounded-3xl border border-ink-100 shadow-lg relative h-[420px] overflow-hidden">
         {/* Stage 1: Create Payment Page */}
         <motion.div
           initial={{ opacity: 0, x: 400 }}
           animate={{ opacity: stage === 0 ? 1 : 0, x: stage === 0 ? 0 : -400 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-6 flex flex-col justify-between overflow-hidden"
+          className="absolute inset-0 p-8 flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center justify-between mb-4">
@@ -614,7 +614,7 @@ function PaymentPagesFlowVisual() {
           initial={{ opacity: 0, x: 400 }}
           animate={{ opacity: stage === 1 ? 1 : 0, x: stage === 1 ? 0 : stage > 1 ? -400 : 400 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-6 flex flex-col justify-between overflow-hidden"
+          className="absolute inset-0 p-8 flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center justify-between mb-4">
@@ -828,7 +828,7 @@ function PaymentPagesFlowVisual() {
           initial={{ opacity: 0, x: 400 }}
           animate={{ opacity: stage === 2 ? 1 : 0, x: stage === 2 ? 0 : stage > 2 ? -400 : 400 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-5 flex flex-col overflow-hidden"
+          className="absolute inset-0 p-8 flex flex-col"
         >
           <div className="flex items-center justify-between mb-2 flex-shrink-0">
             <span className="text-xs font-semibold text-ink-500 uppercase tracking-wider">Checkout</span>
@@ -947,7 +947,7 @@ function PaymentPagesFlowVisual() {
           initial={{ opacity: 0, x: 400 }}
           animate={{ opacity: stage === 3 ? 1 : 0, x: stage === 3 ? 0 : 400 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-6 flex flex-col overflow-hidden"
+          className="absolute inset-0 p-8 flex flex-col overflow-hidden"
         >
           {/* Confetti */}
           {confetti.map((item) => (
@@ -1129,14 +1129,14 @@ function RecurringBillingFlowVisual() {
   }, [stage])
 
   return (
-    <div className="w-full max-w-sm overflow-hidden">
-      <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-lg relative h-96">
+    <div className="w-full max-w-sm">
+      <div className="bg-white rounded-3xl border border-ink-100 shadow-lg relative h-[420px] overflow-hidden">
         {/* Stage 1: Subscription Plan Setup */}
         <motion.div
           initial={{ opacity: 0, x: 400 }}
           animate={{ opacity: stage === 0 ? 1 : 0, x: stage === 0 ? 0 : -400 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-6 flex flex-col justify-between overflow-hidden"
+          className="absolute inset-0 p-8 flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center justify-between mb-6">
@@ -1236,7 +1236,7 @@ function RecurringBillingFlowVisual() {
           initial={{ opacity: 0, x: 400 }}
           animate={{ opacity: stage === 1 ? 1 : 0, x: stage === 1 ? 0 : stage > 1 ? -400 : 400 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-6 flex flex-col justify-between overflow-hidden"
+          className="absolute inset-0 p-8 flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center justify-between mb-6">
@@ -1337,7 +1337,7 @@ function RecurringBillingFlowVisual() {
           initial={{ opacity: 0, x: 400 }}
           animate={{ opacity: stage === 2 ? 1 : 0, x: stage === 2 ? 0 : stage > 2 ? -400 : 400 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-6 flex flex-col justify-between overflow-hidden"
+          className="absolute inset-0 p-8 flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center justify-between mb-6">
@@ -1412,7 +1412,7 @@ function RecurringBillingFlowVisual() {
           initial={{ opacity: 0, x: 400 }}
           animate={{ opacity: stage === 3 ? 1 : 0, x: stage === 3 ? 0 : stage > 3 ? -400 : 400 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-6 flex flex-col items-center justify-center overflow-hidden"
+          className="absolute inset-0 p-8 flex flex-col items-center justify-center"
         >
           <div className="flex flex-col items-center w-full">
             <div className="flex items-center justify-between mb-6">
@@ -1508,7 +1508,7 @@ function RecurringBillingFlowVisual() {
           initial={{ opacity: 0, x: 400 }}
           animate={{ opacity: stage === 4 ? 1 : 0, x: stage === 4 ? 0 : 400 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-6 flex flex-col items-center justify-center overflow-hidden"
+          className="absolute inset-0 p-8 flex flex-col items-center justify-center"
         >
           {/* Confetti */}
           {confetti.map((item) => (
@@ -1633,14 +1633,14 @@ function PaymentFlowVisual() {
   }, [stage])
 
   return (
-    <div className="w-full max-w-sm overflow-hidden">
-      <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-lg relative h-96">
+    <div className="w-full max-w-sm">
+      <div className="bg-white rounded-3xl border border-ink-100 shadow-lg relative h-[420px] overflow-hidden">
         {/* Stage 1: WhatsApp Message */}
         <motion.div
           initial={{ x: 400, opacity: 0 }}
           animate={{ x: stage === 0 ? 0 : -400, opacity: stage === 0 ? 1 : 0 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-6 flex flex-col items-center justify-between"
+          className="absolute inset-0 p-8 flex flex-col items-center justify-between"
         >
           <div className="w-full">
             <div className="flex items-center justify-between mb-6">
@@ -1704,7 +1704,7 @@ function PaymentFlowVisual() {
           initial={{ x: 400, opacity: 0 }}
           animate={{ x: stage === 1 ? 0 : stage > 1 ? -400 : 400, opacity: stage === 1 ? 1 : 0 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-6 flex flex-col justify-between"
+          className="absolute inset-0 p-8 flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center justify-between mb-6">
@@ -1758,7 +1758,7 @@ function PaymentFlowVisual() {
           initial={{ x: 400, opacity: 0 }}
           animate={{ x: stage === 2 ? 0 : stage > 2 ? -400 : 400, opacity: stage === 2 ? 1 : 0 }}
           transition={{ duration: 0.4, ease: 'easeInOut' }}
-          className="absolute inset-0 p-6 flex flex-col justify-between"
+          className="absolute inset-0 p-8 flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center justify-between mb-6">
@@ -1833,7 +1833,7 @@ function PaymentFlowVisual() {
           initial={{ x: 400, opacity: 0 }}
           animate={{ x: stage === 3 ? 0 : stage > 3 ? -400 : 400, opacity: stage === 3 ? 1 : 0 }}
           transition={{ duration: 0.4, ease: 'easeInOut' }}
-          className="absolute inset-0 p-6 flex flex-col justify-between"
+          className="absolute inset-0 p-8 flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center justify-between mb-6">
@@ -1879,7 +1879,7 @@ function PaymentFlowVisual() {
           initial={{ x: 400, opacity: 0 }}
           animate={{ x: stage === 4 ? 0 : 400, opacity: stage === 4 ? 1 : 0 }}
           transition={{ duration: 0.4, ease: 'easeInOut' }}
-          className="absolute inset-0 p-6 flex flex-col items-center justify-center overflow-hidden"
+          className="absolute inset-0 p-8 flex flex-col items-center justify-center"
         >
           {/* Confetti burst */}
           {confetti.map((item) => (
@@ -2015,14 +2015,14 @@ function SmartRecoveryFlowVisual() {
   }, [stage])
 
   return (
-    <div className="w-full max-w-sm overflow-hidden">
-      <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-lg relative h-96">
+    <div className="w-full max-w-sm">
+      <div className="bg-white rounded-3xl border border-ink-100 shadow-lg relative h-[420px] overflow-hidden">
         {/* Stage 1: Detect Failed Payment */}
         <motion.div
           initial={{ opacity: 0, x: 400 }}
           animate={{ opacity: stage === 0 ? 1 : 0, x: stage === 0 ? 0 : -400 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-5 flex flex-col overflow-hidden"
+          className="absolute inset-0 p-8 flex flex-col"
         >
           <div className="flex items-center justify-between mb-3 flex-shrink-0">
             <span className="text-xs font-semibold text-ink-500 uppercase tracking-wider">AI Detection</span>
@@ -2203,7 +2203,7 @@ function SmartRecoveryFlowVisual() {
           initial={{ opacity: 0, x: 400 }}
           animate={{ opacity: stage === 1 ? 1 : 0, x: stage === 1 ? 0 : stage > 1 ? -400 : 400 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-5 flex flex-col overflow-hidden"
+          className="absolute inset-0 p-8 flex flex-col"
         >
           <div className="flex items-center justify-between mb-3 flex-shrink-0">
             <span className="text-xs font-semibold text-ink-500 uppercase tracking-wider">Recovery Workflow</span>
@@ -2358,7 +2358,7 @@ function SmartRecoveryFlowVisual() {
           initial={{ opacity: 0, x: 400 }}
           animate={{ opacity: stage === 2 ? 1 : 0, x: stage === 2 ? 0 : 400 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-5 flex flex-col overflow-hidden"
+          className="absolute inset-0 p-8 flex flex-col overflow-hidden"
         >
           <div className="flex items-center justify-between mb-3 flex-shrink-0">
             <span className="text-xs font-semibold text-ink-500 uppercase tracking-wider">Recovery Analytics</span>

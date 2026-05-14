@@ -57,7 +57,7 @@ export default function Hero() {
                 href="#"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="group px-7 py-4 bg-ink-900 text-white rounded-full font-semibold flex items-center justify-center gap-2 hover:bg-brand-700 transition shadow-lg shadow-ink-900/10"
+                className="group px-7 py-4 bg-brand-600 text-white rounded-full font-semibold flex items-center justify-center gap-2 hover:bg-brand-700 transition shadow-lg shadow-brand-600/20"
               >
                 Start accepting payments
                 <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

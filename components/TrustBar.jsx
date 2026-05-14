@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { useRef, useEffect } from 'react'
 
-const BG = '#03060d'
+const BG = '#1b77f6' // Logo Blue
 
 // CSS for the component-specific background effects
 const trustBarStyles = `
@@ -19,9 +19,8 @@ const trustBarStyles = `
 `
 
 const CARD_SHADOW = `
-  0 0 0 1px rgba(255,255,255,0.05),
-  0 4px 16px rgba(0,0,0,0.30),
-  0 0  48px rgba(27,119,246,0.07)
+  0 0 0 1px rgba(255,255,255,0.1),
+  0 8px 32px rgba(0,0,0,0.15)
 `
 
 const col1 = [
@@ -68,47 +67,26 @@ export default function TrustBar() {
         style={{ background: BG, boxShadow: CARD_SHADOW, transformStyle: 'preserve-3d' }}
         className="relative rounded-[2.5rem] overflow-hidden py-10"
       >
-        {/* Animated Background Orbs */}
+        {/* Ambient Glows for Blue Theme */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div 
-            className="absolute -top-1/2 -left-1/4 w-full h-full rounded-full opacity-20 blur-[100px]"
+            className="absolute -top-1/2 -left-1/4 w-full h-full rounded-full opacity-30 blur-[120px]"
             style={{ 
-              background: 'radial-gradient(circle, #1b77f6 0%, transparent 70%)',
+              background: 'radial-gradient(circle, #ffffff 0%, transparent 70%)',
               animation: 'aurora-drift 15s infinite alternate ease-in-out' 
-            }}
-          />
-          <div 
-            className="absolute -bottom-1/2 -right-1/4 w-full h-full rounded-full opacity-20 blur-[100px]"
-            style={{ 
-              background: 'radial-gradient(circle, #06b6d4 0%, transparent 70%)',
-              animation: 'aurora-drift 20s infinite alternate-reverse ease-in-out' 
             }}
           />
         </div>
 
-        {/* Sparkle Overlay */}
-        <div 
-          className="absolute inset-0 opacity-20 pointer-events-none"
-          style={{ 
-            backgroundImage: `
-              radial-gradient(1px 1px at 10% 20%, white 100%, transparent),
-              radial-gradient(1px 1px at 30% 50%, white 100%, transparent),
-              radial-gradient(1.5px 1.5px at 70% 30%, white 100%, transparent),
-              radial-gradient(1px 1px at 90% 80%, white 100%, transparent)
-            `,
-            backgroundSize: '250px 250px',
-            animation: 'sparkle-pulse 6s infinite alternate'
-          }}
-        />
         {/* Gloss reflection */}
         <div
           className="absolute inset-x-0 top-0 h-32 pointer-events-none z-20 rounded-t-[2.5rem]"
-          style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.04) 0%, transparent 100%)' }}
+          style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, transparent 100%)' }}
         />
         {/* Top rim light */}
         <div
           className="absolute inset-x-0 top-0 h-px pointer-events-none z-20"
-          style={{ background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent)' }}
+          style={{ background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent)' }}
         />
 
         {/* Heading */}
@@ -119,11 +97,11 @@ export default function TrustBar() {
           transition={{ delay: 0.3, duration: 0.6 }}
           className="flex items-center justify-center gap-5 px-8 mb-8"
         >
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent to-white/10 max-w-xs hidden sm:block" />
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent to-white/20 max-w-xs hidden sm:block" />
           <p className="text-[11px] font-bold text-white uppercase tracking-[0.18em] text-center">
             Powering payments for 10,000+ businesses across Southeast Asia
           </p>
-          <div className="flex-1 h-px bg-gradient-to-l from-transparent to-white/10 max-w-xs hidden sm:block" />
+          <div className="flex-1 h-px bg-gradient-to-l from-transparent to-white/20 max-w-xs hidden sm:block" />
         </motion.div>
 
         {/* Column scroll wall */}
@@ -212,17 +190,17 @@ function ScrollCol({ items, direction, speed, custom, extraClass = '' }) { // NO
 
 function PartnerCard({ name, logo, cat }) { // NOSONAR javascript:S6774
   return (
-    <div className="shrink-0 flex items-center gap-3 p-4 rounded-2xl border border-white/[0.07] bg-white/[0.04] hover:bg-white/[0.09] hover:border-white/20 transition-all duration-300 cursor-default group">
-      <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 overflow-hidden p-1.5">
+    <div className="shrink-0 flex items-center gap-3 p-4 rounded-2xl border border-white/10 bg-white/10 hover:bg-white/20 hover:border-white/30 transition-all duration-300 cursor-default group backdrop-blur-sm">
+      <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 overflow-hidden p-1.5 shadow-lg">
         <img src={logo} alt={name} className="w-full h-full object-contain" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-white/60 group-hover:text-white/90 transition-colors duration-200 truncate">
+        <p className="text-sm font-semibold text-white group-hover:text-white transition-colors duration-200 truncate">
           {name}
         </p>
-        <p className="text-[10px] text-white/20 uppercase tracking-widest mt-0.5">{cat}</p>
+        <p className="text-[10px] text-white/40 uppercase tracking-widest mt-0.5">{cat}</p>
       </div>
-      <div className="w-1.5 h-1.5 rounded-full shrink-0 opacity-40 group-hover:opacity-100 transition-opacity duration-300 bg-white/40" />
+      <div className="w-1.5 h-1.5 rounded-full shrink-0 opacity-40 group-hover:opacity-100 transition-opacity duration-300 bg-white" />
     </div>
   )
 }
