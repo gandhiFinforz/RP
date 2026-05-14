@@ -77,11 +77,40 @@ export default function Hero() {
               </motion.a>
             </motion.div>
 
+            {/* Pay online logos */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.35 }}
+              className="mt-10"
+            >
+              <p className="text-xs font-semibold text-ink-400 uppercase tracking-wider mb-3">Pay online</p>
+              <div className="flex flex-wrap items-center gap-3">
+                {[
+                  { src: '/fpx.png',        alt: 'FPX' },
+                  { src: '/mydebit.png',     alt: 'MyDebit' },
+                  { src: '/DUIT.png',        alt: 'DuitNow' },
+                  { src: '/visa.svg',        alt: 'Visa' },
+                  { src: '/mastercard.svg',  alt: 'Mastercard' },
+                  { src: '/tng.svg',         alt: 'Touch n Go' },
+                  { src: '/GrabPay.png',     alt: 'GrabPay' },
+                  { src: '/boost.png',       alt: 'Boost' },
+                ].map(({ src, alt }) => (
+                  <div
+                    key={alt}
+                    className="h-8 px-2.5 bg-white border border-ink-100 rounded-lg flex items-center justify-center shadow-sm"
+                  >
+                    <img src={src} alt={alt} className="h-5 w-auto object-contain" />
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="mt-12 flex items-center gap-8 text-sm text-ink-500"
+              className="mt-8 flex items-center gap-8 text-sm text-ink-500"
             >
               <div className="flex items-center gap-2">
                 <svg className="w-5 h-5 text-brand-600" fill="currentColor" viewBox="0 0 20 20">
@@ -95,7 +124,7 @@ export default function Hero() {
                 </svg>
                 Bank Negara approved
               </div>
-              <div className="flex items-center gap-2 hidden md:flex">
+              <div className="hidden md:flex items-center gap-2">
                 <svg className="w-5 h-5 text-brand-600" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
@@ -121,10 +150,10 @@ export default function Hero() {
 
 function HeroVisual() {
   const sources = [
-    { label: 'Card', color: '#1b77f6', icon: 'card' },
-    { label: 'FPX', color: '#10b981', icon: 'bank' },
-    { label: 'DuitNow', color: '#f43f5e', icon: 'qr' },
-    { label: 'GrabPay', color: '#22c55e', icon: 'wallet' },
+    { label: 'Card',    color: '#1b77f6', logo: '/mastercard.svg' },
+    { label: 'FPX',     color: '#10b981', logo: '/fpx.png'       },
+    { label: 'DuitNow', color: '#f43f5e', logo: '/DUIT.png'      },
+    { label: 'GrabPay', color: '#22c55e', logo: '/GrabPay.png'   },
   ]
 
   // Coordinate system — viewBox 400 × 400
@@ -191,7 +220,7 @@ function HeroVisual() {
             {sourceYs.map((y, i) => {
               const d = `M ${sourceX} ${y} C ${sourceX + 70} ${y}, ${hubX - 50} ${hubY}, ${hubX} ${hubY}`
               return (
-                <g key={`src-${i}`}>
+                <g key={sources[i].label}>
                   {/* Base track */}
                   <path d={d} fill="none" stroke="#e2e8f0" strokeWidth="1.5" strokeDasharray="4 4" />
                   {/* Flowing energy along the track */}
@@ -269,10 +298,10 @@ function HeroVisual() {
                 <motion.div
                   animate={{ boxShadow: [`0 0 0 0 ${sources[i].color}55`, `0 0 0 8px ${sources[i].color}00`] }}
                   transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.4 }}
-                  className="w-11 h-11 rounded-xl flex items-center justify-center text-white shrink-0"
-                  style={{ background: `linear-gradient(135deg, ${sources[i].color}, ${sources[i].color}cc)` }}
+                  className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 overflow-hidden"
+                  style={{ background: sources[i].logo ? 'white' : `linear-gradient(135deg, ${sources[i].color}, ${sources[i].color}cc)` }}
                 >
-                  <FlowIcon type={sources[i].icon} />
+                  <img src={sources[i].logo} alt={sources[i].label} className="w-8 h-8 object-contain" />
                 </motion.div>
                 <span className="text-[11px] font-semibold text-ink-700 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-md whitespace-nowrap">
                   {sources[i].label}
@@ -397,39 +426,5 @@ function RinggitPayLogoMark() {
         className="w-16 h-16"
       />
     </div>
-  )
-}
-
-function FlowIcon({ type }) {
-  if (type === 'card') {
-    return (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-        <rect x="3" y="6" width="18" height="13" rx="2" />
-        <path d="M3 10h18" strokeLinecap="round" />
-      </svg>
-    )
-  }
-  if (type === 'bank') {
-    return (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-        <path d="M3 10l9-6 9 6M5 10v9M19 10v9M3 20h18" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    )
-  }
-  if (type === 'qr') {
-    return (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-        <rect x="3" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="3" width="7" height="7" rx="1" />
-        <rect x="3" y="14" width="7" height="7" rx="1" />
-        <path d="M14 14h3v3M21 17v4M17 21h4" strokeLinecap="round" />
-      </svg>
-    )
-  }
-  return (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-      <path d="M3 8a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
-      <path d="M16 14h2M3 10h18" strokeLinecap="round" />
-    </svg>
   )
 }

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 471" role="img" aria-label="Mastercard">
+  <rect width="750" height="471" rx="40" fill="#252525"/>
+  <!-- Red circle -->
+  <circle cx="290" cy="235" r="150" fill="#EB001B"/>
+  <!-- Yellow/orange circle -->
+  <circle cx="460" cy="235" r="150" fill="#F79E1B"/>
+  <!-- Overlap - creates the blended center area -->
+  <path d="M375 113.4c30.2 22.4 49.7 58.1 49.7 98.3 0 23.9-6.8 46.2-18.6 65-11.8 18.8-28.8 34.2-49.1 44.3-20.3-10.1-37.3-25.5-49.1-44.3-11.8-18.8-18.6-41.1-18.6-65 0-40.2 19.5-75.9 49.7-98.3z" fill="#FF5F00"/>
+</svg>

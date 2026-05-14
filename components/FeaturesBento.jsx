@@ -116,7 +116,7 @@ export default function FeaturesBento() {
                 </div>
                 <h3 className="text-2xl font-bold mb-2">Built for developers</h3>
                 <p className="text-ink-300 text-sm leading-relaxed">
-                  Clean REST APIs, native SDKs in 8 languages, and webhooks that just work.
+                  REST APIs and e-Commerce plugins.
                 </p>
               </div>
               <div className="bg-ink-800 rounded-xl p-4 font-mono text-xs overflow-hidden">

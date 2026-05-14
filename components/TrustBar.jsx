@@ -25,26 +25,26 @@ const CARD_SHADOW = `
 `
 
 const col1 = [
-  { name: 'Maybank',     abbr: 'MB', color: '#fbbf24', cat: 'Bank' },
-  { name: 'CIMB',        abbr: 'CI', color: '#f87171', cat: 'Bank' },
-  { name: 'Public Bank', abbr: 'PB', color: '#60a5fa', cat: 'Bank' },
-  { name: 'RHB',         abbr: 'RH', color: '#34d399', cat: 'Bank' },
-  { name: 'Hong Leong',  abbr: 'HL', color: '#a78bfa', cat: 'Bank' },
+  { name: 'Maybank',     logo: '/maybank.png',    cat: 'Bank' },
+  { name: 'CIMB',        logo: '/cimb.svg',        cat: 'Bank' },
+  { name: 'Public Bank', logo: '/publicbank.svg',  cat: 'Bank' },
+  { name: 'RHB',         logo: '/rhb.svg',          cat: 'Bank' },
+  { name: 'Hong Leong',  logo: '/hongleong.svg',   cat: 'Bank' },
 ]
 
 const col2 = [
-  { name: 'GrabPay',    abbr: 'GP', color: '#4ade80', cat: 'E-Wallet' },
-  { name: 'Touch n Go', abbr: 'TG', color: '#22d3ee', cat: 'E-Wallet' },
-  { name: 'Boost',      abbr: 'BO', color: '#fb923c', cat: 'E-Wallet' },
-  { name: 'ShopeePay',  abbr: 'SP', color: '#f472b6', cat: 'E-Wallet' },
-  { name: 'AmBank',     abbr: 'AM', color: '#fda4af', cat: 'Bank' },
+  { name: 'GrabPay',    logo: '/GrabPay.png',    cat: 'E-Wallet' },
+  { name: 'Touch n Go', logo: '/tng.svg',         cat: 'E-Wallet' },
+  { name: 'Boost',      logo: '/boost.png',       cat: 'E-Wallet' },
+  { name: 'ShopeePay',  logo: '/shopeepay.svg',   cat: 'E-Wallet' },
+  { name: 'AmBank',     logo: '/ambank.svg',      cat: 'Bank' },
 ]
 
 const col3 = [
-  { name: 'DuitNow',    abbr: 'DN', color: '#fb7185', cat: 'Transfer' },
-  { name: 'FPX',        abbr: 'FX', color: '#c084fc', cat: 'Transfer' },
-  { name: 'Visa',       abbr: 'VI', color: '#93c5fd', cat: 'Network' },
-  { name: 'Mastercard', abbr: 'MC', color: '#fcd34d', cat: 'Network' },
+  { name: 'DuitNow',    logo: '/DUIT.png',        cat: 'Transfer' },
+  { name: 'FPX',        logo: '/fpx.png',          cat: 'Transfer' },
+  { name: 'Visa',       logo: '/visa.svg',         cat: 'Network' },
+  { name: 'Mastercard', logo: '/mastercard.svg',  cat: 'Network' },
 ]
 
 const colVariants = {
@@ -210,14 +210,11 @@ function ScrollCol({ items, direction, speed, custom, extraClass = '' }) { // NO
   )
 }
 
-function PartnerCard({ name, abbr, color, cat }) { // NOSONAR javascript:S6774
+function PartnerCard({ name, logo, cat }) { // NOSONAR javascript:S6774
   return (
     <div className="shrink-0 flex items-center gap-3 p-4 rounded-2xl border border-white/[0.07] bg-white/[0.04] hover:bg-white/[0.09] hover:border-white/20 transition-all duration-300 cursor-default group">
-      <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold shrink-0"
-        style={{ background: `${color}18`, color }}
-      >
-        {abbr}
+      <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 overflow-hidden p-1.5">
+        <img src={logo} alt={name} className="w-full h-full object-contain" />
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold text-white/60 group-hover:text-white/90 transition-colors duration-200 truncate">
@@ -225,10 +222,7 @@ function PartnerCard({ name, abbr, color, cat }) { // NOSONAR javascript:S6774
         </p>
         <p className="text-[10px] text-white/20 uppercase tracking-widest mt-0.5">{cat}</p>
       </div>
-      <div
-        className="w-1.5 h-1.5 rounded-full shrink-0 opacity-40 group-hover:opacity-100 transition-opacity duration-300"
-        style={{ background: color }}
-      />
+      <div className="w-1.5 h-1.5 rounded-full shrink-0 opacity-40 group-hover:opacity-100 transition-opacity duration-300 bg-white/40" />
     </div>
   )
 }

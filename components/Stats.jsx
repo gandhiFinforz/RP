@@ -32,9 +32,8 @@ function Counter({ end, suffix = '', prefix = '', duration = 2 }) {
 }
 
 const stats = [
-  { value: 10000, suffix: '+', label: 'Active merchants', sub: 'Across SEA' },
-  { value: 2.4, suffix: 'B', prefix: 'RM ', label: 'Processed annually', sub: 'And growing' },
-  { value: 150, suffix: '+', label: 'Payment methods', sub: 'Cards, wallets, banks' },
+  { value: 600, suffix: '+', label: 'Active customers', sub: 'Across SEA' },
+  { value: 200, suffix: 'M+', prefix: 'RM ', label: 'Processed', sub: 'As of now and growing' },
   { value: 99.99, suffix: '%', label: 'Platform uptime', sub: 'Last 12 months' },
 ]
 
@@ -60,7 +59,7 @@ export default function Stats() {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-2">
           {stats.map((stat, i) => (
             <motion.div
               key={i}
