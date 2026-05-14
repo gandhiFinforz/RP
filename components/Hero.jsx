@@ -5,11 +5,8 @@ import BubbleBackground from './BubbleBackground'
 
 export default function Hero() {
   return (
-    <section className="relative pt-24 pb-20 overflow-hidden">
-      {/* Background layers */}
-      <div className="absolute inset-0 spotlight pointer-events-none" />
-      <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
-      <BubbleBackground count={18} />
+    <section className="relative pt-24 pb-20 overflow-hidden bg-white">
+      <BubbleBackground />
 
       <div className="relative max-w-8xl mx-auto px-6 lg:px-10">
         <div className="grid lg:grid-cols-12 gap-12 items-center">
