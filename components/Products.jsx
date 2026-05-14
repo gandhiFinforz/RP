@@ -1,7 +1,7 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
-import { useRef, useState, useEffect } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 
 const products = [
   {
@@ -42,47 +42,23 @@ const products = [
   },
 ]
 
-const STAGE_COUNTS = [5, 5, 4, 3] // collect, billing, pages, recovery
-
 export default function Products() {
   const [activeIndex, setActiveIndex] = useState(0)
-  const [isLocked, setIsLocked] = useState(false)
-  const [stages, setStages] = useState([0, 0, 0, 0])
   const sectionRefs = useRef([])
   const tickingRef = useRef(false)
   const activeIndexRef = useRef(0)
-  const stagesRef = useRef([0, 0, 0, 0])
   const lockUntilRef = useRef(0)
 
-  // Keep refs in sync with state for the scroll handler
   useEffect(() => {
     activeIndexRef.current = activeIndex
   }, [activeIndex])
 
-  useEffect(() => {
-    stagesRef.current = stages
-  }, [stages])
-
-  const setStageAt = (idx, newStage) => {
-    setStages((prev) => {
-      if (prev[idx] === newStage) return prev
-      const next = [...prev]
-      next[idx] = newStage
-      return next
-    })
-    stagesRef.current = [...stagesRef.current]
-    stagesRef.current[idx] = newStage
-  }
-
-  // Initial hold: 2 seconds for first product, 1 second for others
+  // Initial hold per product so the user sees the first frame before scroll-snap kicks in
   useEffect(() => {
     const FIRST_PRODUCT_PAUSE = 2000
     const OTHER_PRODUCT_PAUSE = 1000
     const pauseTime = activeIndex === 0 ? FIRST_PRODUCT_PAUSE : OTHER_PRODUCT_PAUSE
     lockUntilRef.current = Date.now() + pauseTime
-    setIsLocked(true)
-    const timer = setTimeout(() => setIsLocked(false), pauseTime)
-    return () => clearTimeout(timer)
   }, [activeIndex])
 
   useEffect(() => {
@@ -122,10 +98,9 @@ export default function Products() {
     }
   }, [])
 
-  // Scroll-snap stage navigation across all products
+  // Scroll-snap between products only — inner stages auto-animate
   useEffect(() => {
     const PAUSE_MS = 1000
-    const STAGE_LOCK_MS = 1000
 
     const isProductsInView = () => {
       const el = document.getElementById('products')
@@ -135,25 +110,12 @@ export default function Products() {
       return rect.top <= viewportCenter && rect.bottom >= viewportCenter
     }
 
-    const snapTo = (idx, { startAtEnd = false } = {}) => {
+    const snapTo = (idx) => {
       const target = sectionRefs.current[idx]
       if (!target) return
       target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      const initialStage = startAtEnd ? STAGE_COUNTS[idx] - 1 : 0
-      setStageAt(idx, initialStage)
       const pauseTime = idx === 0 ? 2000 : PAUSE_MS
       lockUntilRef.current = Date.now() + pauseTime
-      setIsLocked(true)
-      setTimeout(() => setIsLocked(false), pauseTime)
-    }
-
-    const advanceStage = (e, delta) => {
-      e.preventDefault()
-      const idx = activeIndexRef.current
-      setStageAt(idx, stagesRef.current[idx] + delta)
-      lockUntilRef.current = Date.now() + STAGE_LOCK_MS
-      setIsLocked(true)
-      setTimeout(() => setIsLocked(false), STAGE_LOCK_MS)
     }
 
     const handleDirection = (e, direction) => {
@@ -163,31 +125,10 @@ export default function Products() {
         e.preventDefault()
         return
       }
-
-      const idx = activeIndexRef.current
-      const currentStage = stagesRef.current[idx]
-      const maxStage = STAGE_COUNTS[idx] - 1
-
-      if (direction > 0) {
-        if (currentStage < maxStage) {
-          advanceStage(e, 1)
-          return
-        }
-        const next = idx + 1
-        if (next >= products.length) return
-        e.preventDefault()
-        snapTo(next, { startAtEnd: false })
-        return
-      }
-
-      if (currentStage > 0) {
-        advanceStage(e, -1)
-        return
-      }
-      const next = idx - 1
-      if (next < 0) return
+      const next = activeIndexRef.current + direction
+      if (next < 0 || next >= products.length) return
       e.preventDefault()
-      snapTo(next, { startAtEnd: true })
+      snapTo(next)
     }
 
     const handleWheel = (e) => {
@@ -307,7 +248,6 @@ export default function Products() {
                           behavior: 'smooth',
                           block: 'start',
                         })
-                        setStageAt(i, 0)
                       }}
                       className="flex-1 group"
                     >
@@ -353,10 +293,7 @@ export default function Products() {
                       }}
                       className="absolute inset-0 flex items-center justify-center p-10"
                     >
-                      <ProductVisual
-                        type={products[activeIndex].visual}
-                        stage={stages[activeIndex]}
-                      />
+                      <ProductVisual type={products[activeIndex].visual} />
                     </motion.div>
                   </AnimatePresence>
 
@@ -369,12 +306,12 @@ export default function Products() {
 
         {/* Mobile inline visuals */}
         <div className="lg:hidden space-y-12 mt-8">
-          {products.map((p, i) => (
+          {products.map((p) => (
             <div
               key={`m-${p.id}`}
               className="aspect-square rounded-3xl bg-gradient-to-br from-brand-50 via-white to-ink-50 border border-ink-100 shadow-xl p-8 flex items-center justify-center"
             >
-              <ProductVisual type={p.visual} stage={stages[i]} mobile />
+              <ProductVisual type={p.visual} />
             </div>
           ))}
         </div>
@@ -456,21 +393,19 @@ function BrandLogo({ className = 'w-12 h-12' }) {
   )
 }
 
-function PaymentPagesFlowVisual({ stage: externalStage = 0, autoCycle = false }) {
-  const [internalStage, setInternalStage] = useState(0)
-  const stage = autoCycle ? internalStage : externalStage
+function PaymentPagesFlowVisual() {
+  const [stage, setStage] = useState(0)
   const [confetti, setConfetti] = useState([])
   const [copied, setCopied] = useState(false)
   const [revenueCount, setRevenueCount] = useState(0)
   const [tickerItems, setTickerItems] = useState([])
 
   useEffect(() => {
-    if (!autoCycle) return
     const timer = setInterval(() => {
-      setInternalStage((prev) => (prev < 3 ? prev + 1 : 0))
+      setStage((prev) => (prev < 3 ? prev + 1 : 0))
     }, 5500)
     return () => clearInterval(timer)
-  }, [autoCycle])
+  }, [])
 
   // Copy ripple effect on stage 2
   useEffect(() => {
@@ -1171,18 +1106,16 @@ function AmountCounter({ target, active }) {
   return <span className="tabular-nums">RM {count}</span>
 }
 
-function RecurringBillingFlowVisual({ stage: externalStage = 0, autoCycle = false }) {
-  const [internalStage, setInternalStage] = useState(0)
-  const stage = autoCycle ? internalStage : externalStage
+function RecurringBillingFlowVisual() {
+  const [stage, setStage] = useState(0)
   const [confetti, setConfetti] = useState([])
 
   useEffect(() => {
-    if (!autoCycle) return
     const timer = setInterval(() => {
-      setInternalStage((prev) => (prev < 4 ? prev + 1 : 0))
-    }, 4000)
+      setStage((prev) => (prev < 4 ? prev + 1 : 0))
+    }, 1500)
     return () => clearInterval(timer)
-  }, [autoCycle])
+  }, [])
 
   useEffect(() => {
     if (stage === 4) {
@@ -1677,22 +1610,25 @@ function RecurringBillingFlowVisual({ stage: externalStage = 0, autoCycle = fals
   )
 }
 
-function PaymentFlowVisual({ paymentFlowStage = 0, setPaymentFlowStage }) {
+function PaymentFlowVisual() {
+  const [stage, setStage] = useState(0)
   const [confetti, setConfetti] = useState([])
-  const stage = paymentFlowStage
 
-  const createConfetti = () => {
-    const newConfetti = Array.from({ length: 30 }, (_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      delay: Math.random() * 0.2,
-    }))
-    setConfetti(newConfetti)
-  }
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setStage((prev) => (prev < 4 ? prev + 1 : 0))
+    }, 1500)
+    return () => clearInterval(timer)
+  }, [])
 
   useEffect(() => {
     if (stage === 4) {
-      createConfetti()
+      const newConfetti = Array.from({ length: 30 }, (_, i) => ({
+        id: i,
+        left: Math.random() * 100,
+        delay: Math.random() * 0.2,
+      }))
+      setConfetti(newConfetti)
     }
   }, [stage])
 
@@ -2027,36 +1963,34 @@ function PaymentFlowVisual({ paymentFlowStage = 0, setPaymentFlowStage }) {
   )
 }
 
-function ProductVisual({ type, stage = 0, mobile = false }) {
+function ProductVisual({ type }) {
   if (type === 'collect') {
-    return <PaymentFlowVisual paymentFlowStage={stage} />
+    return <PaymentFlowVisual />
   }
 
   if (type === 'billing') {
-    return <RecurringBillingFlowVisual stage={stage} autoCycle={mobile} />
+    return <RecurringBillingFlowVisual />
   }
 
   if (type === 'pages') {
-    return <PaymentPagesFlowVisual stage={stage} autoCycle={mobile} />
+    return <PaymentPagesFlowVisual />
   }
 
   // recovery
-  return <SmartRecoveryFlowVisual stage={stage} autoCycle={mobile} />
+  return <SmartRecoveryFlowVisual />
 }
 
-function SmartRecoveryFlowVisual({ stage: externalStage = 0, autoCycle = false }) {
-  const [internalStage, setInternalStage] = useState(0)
-  const stage = autoCycle ? internalStage : externalStage
+function SmartRecoveryFlowVisual() {
+  const [stage, setStage] = useState(0)
   const [recoveredAmount, setRecoveredAmount] = useState(0)
   const [recoveryPercent, setRecoveryPercent] = useState(0)
 
   useEffect(() => {
-    if (!autoCycle) return
     const timer = setInterval(() => {
-      setInternalStage((prev) => (prev < 2 ? prev + 1 : 0))
+      setStage((prev) => (prev < 2 ? prev + 1 : 0))
     }, 5500)
     return () => clearInterval(timer)
-  }, [autoCycle])
+  }, [])
 
   // Counter animation for stage 3
   useEffect(() => {

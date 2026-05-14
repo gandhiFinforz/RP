@@ -75,7 +75,7 @@ export default function FeaturesBento() {
             </p>
           </motion.div>
 
-          {/* Global */}
+          {/* Local rails */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -85,12 +85,17 @@ export default function FeaturesBento() {
           >
             <div className="w-12 h-12 rounded-xl bg-ink-900 text-white flex items-center justify-center mb-6">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <circle cx="12" cy="12" r="3" strokeWidth={1.8} />
+                <circle cx="5" cy="5" r="2" strokeWidth={1.8} />
+                <circle cx="19" cy="5" r="2" strokeWidth={1.8} />
+                <circle cx="5" cy="19" r="2" strokeWidth={1.8} />
+                <circle cx="19" cy="19" r="2" strokeWidth={1.8} />
+                <path strokeLinecap="round" strokeWidth={1.8} d="M6.5 6.5l3 3M17.5 6.5l-3 3M6.5 17.5l3-3M17.5 17.5l-3-3" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-ink-900 mb-2">150+ currencies</h3>
+            <h3 className="text-xl font-bold text-ink-900 mb-2">All Malaysian rails</h3>
             <p className="text-ink-600 text-sm leading-relaxed">
-              Accept payments from anywhere. Settle locally. We handle FX.
+              FPX, DuitNow QR, cards, GrabPay, TNG and Boost — one integration covers every checkout.
             </p>
           </motion.div>
 
