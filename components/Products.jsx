@@ -653,66 +653,100 @@ function PaymentPagesFlowVisual() {
             </motion.div>
 
             <div className="flex items-center gap-3">
-              {/* Clean QR Code */}
+              {/* QR Code */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.7, rotateY: -90 }}
                 animate={{ opacity: 1, scale: 1, rotateY: 0 }}
                 transition={{ delay: 0.4, type: 'spring', stiffness: 100 }}
-                className="w-24 h-24 rounded-lg bg-white p-2 border border-ink-200 shadow-md flex-shrink-0"
+                className="w-28 h-28 rounded-2xl bg-white p-2 border border-blue-100 shadow-lg flex-shrink-0 overflow-hidden"
               >
-                <svg className="w-full h-full" viewBox="0 0 25 25" shapeRendering="crispEdges">
-                  {/* Position markers */}
-                  <rect x="0" y="0" width="7" height="7" fill="#0a0a0a" />
-                  <rect x="1" y="1" width="5" height="5" fill="white" />
-                  <rect x="2" y="2" width="3" height="3" fill="#0a0a0a" />
+                <svg className="w-full h-full" viewBox="0 0 25 25">
+                  <defs>
+                    <linearGradient id="qrG" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor="#0a2a88"/>
+                      <stop offset="100%" stopColor="#1b77f6"/>
+                    </linearGradient>
+                  </defs>
 
-                  <rect x="18" y="0" width="7" height="7" fill="#0a0a0a" />
-                  <rect x="19" y="1" width="5" height="5" fill="white" />
-                  <rect x="20" y="2" width="3" height="3" fill="#0a0a0a" />
+                  {/* TL finder */}
+                  <rect x="0" y="0" width="7" height="7" rx="1.4" fill="url(#qrG)"/>
+                  <rect x="1" y="1" width="5" height="5" rx="0.8" fill="white"/>
+                  <rect x="2" y="2" width="3" height="3" rx="0.5" fill="url(#qrG)"/>
 
-                  <rect x="0" y="18" width="7" height="7" fill="#0a0a0a" />
-                  <rect x="1" y="19" width="5" height="5" fill="white" />
-                  <rect x="2" y="20" width="3" height="3" fill="#0a0a0a" />
+                  {/* TR finder */}
+                  <rect x="18" y="0" width="7" height="7" rx="1.4" fill="url(#qrG)"/>
+                  <rect x="19" y="1" width="5" height="5" rx="0.8" fill="white"/>
+                  <rect x="20" y="2" width="3" height="3" rx="0.5" fill="url(#qrG)"/>
 
-                  {/* Data dots */}
-                  {[
-                    [9, 0], [10, 0], [12, 0], [14, 0], [15, 0],
-                    [8, 1], [11, 1], [13, 1], [16, 1],
-                    [9, 2], [10, 2], [12, 2], [15, 2],
-                    [8, 3], [13, 3], [14, 3], [16, 3],
-                    [9, 4], [11, 4], [12, 4], [15, 4],
-                    [10, 5], [11, 5], [14, 5], [16, 5],
-                    [8, 6], [10, 6], [13, 6], [15, 6],
+                  {/* BL finder */}
+                  <rect x="0" y="18" width="7" height="7" rx="1.4" fill="url(#qrG)"/>
+                  <rect x="1" y="19" width="5" height="5" rx="0.8" fill="white"/>
+                  <rect x="2" y="20" width="3" height="3" rx="0.5" fill="url(#qrG)"/>
 
-                    [0, 9], [2, 9], [4, 9], [6, 9], [8, 9], [10, 9], [12, 9], [14, 9], [16, 9], [18, 9], [20, 9], [22, 9], [24, 9],
-                    [1, 10], [3, 10], [7, 10], [9, 10], [11, 10], [13, 10], [17, 10], [19, 10], [23, 10],
-                    [0, 11], [2, 11], [5, 11], [8, 11], [12, 11], [16, 11], [18, 11], [21, 11], [24, 11],
-                    [1, 12], [3, 12], [6, 12], [10, 12], [13, 12], [15, 12], [17, 12], [20, 12], [22, 12],
-                    [0, 13], [4, 13], [7, 13], [9, 13], [11, 13], [14, 13], [18, 13], [21, 13], [23, 13],
-                    [2, 14], [5, 14], [8, 14], [10, 14], [13, 14], [16, 14], [19, 14], [22, 14], [24, 14],
-                    [1, 15], [3, 15], [6, 15], [9, 15], [12, 15], [15, 15], [17, 15], [20, 15], [23, 15],
-                    [0, 16], [4, 16], [7, 16], [11, 16], [14, 16], [18, 16], [21, 16],
+                  {/* All modules: timing strips, alignment pattern, dense data */}
+                  {(() => {
+                    const alignPat = [
+                      [1,1,1,1,1],[1,0,0,0,1],[1,0,1,0,1],[1,0,0,0,1],[1,1,1,1,1]
+                    ]
+                    const mods = []
+                    for (let r = 0; r < 25; r++) {
+                      for (let c = 0; c < 25; c++) {
+                        // Skip the three finder zones
+                        if (r < 7 && c < 7) continue
+                        if (r < 7 && c >= 18) continue
+                        if (r >= 18 && c < 7) continue
+                        // Skip separators (1-module quiet strip around each finder)
+                        if (r === 7 && c <= 7) continue
+                        if (c === 7 && r <= 7) continue
+                        if (r === 7 && c >= 17) continue
+                        if (c === 17 && r <= 7) continue
+                        if (r === 17 && c <= 7) continue
+                        if (c === 7 && r >= 17) continue
 
-                    [9, 18], [11, 18], [13, 18], [16, 18], [19, 18], [22, 18],
-                    [10, 19], [14, 19], [17, 19], [20, 19], [23, 19],
-                    [9, 20], [12, 20], [15, 20], [18, 20], [21, 20], [24, 20],
-                    [11, 21], [13, 21], [16, 21], [19, 21], [22, 21],
-                    [10, 22], [14, 22], [17, 22], [20, 22], [23, 22],
-                    [9, 23], [12, 23], [15, 23], [18, 23], [21, 23],
-                    [11, 24], [14, 24], [17, 24], [20, 24], [23, 24],
-                  ].map(([x, y], i) => (
-                    <motion.rect
-                      key={i}
-                      x={x}
-                      y={y}
-                      width="1"
-                      height="1"
-                      fill="#0a0a0a"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.5 + i * 0.003, duration: 0.2 }}
-                    />
-                  ))}
+                        let dark = false
+
+                        // Horizontal timing strip (row 6, cols 8-16)
+                        if (r === 6 && c >= 8 && c <= 16) {
+                          dark = c % 2 === 0
+                        }
+                        // Vertical timing strip (col 6, rows 8-16)
+                        else if (c === 6 && r >= 8 && r <= 16) {
+                          dark = r % 2 === 0
+                        }
+                        // Alignment pattern — v2 QR center at (row 18, col 18)
+                        else if (r >= 16 && r <= 20 && c >= 16 && c <= 20) {
+                          dark = alignPat[r - 16][c - 16] === 1
+                        }
+                        // Always-dark format module
+                        else if (r === 8 && c === 8) {
+                          dark = true
+                        }
+                        // Data region — pseudo-random but deterministic, ~57% density
+                        else {
+                          dark = ((r * 11 + c * 7 + r * c * 3) % 7) < 4
+                        }
+
+                        if (dark) {
+                          const accent = (r * 3 + c * 5) % 11 === 0
+                          mods.push(
+                            <rect
+                              key={`${r}-${c}`}
+                              x={c + 0.08} y={r + 0.08}
+                              width="0.84" height="0.84"
+                              rx="0.15"
+                              fill={accent ? '#1b77f6' : '#0c1e6b'}
+                            />
+                          )
+                        }
+                      }
+                    }
+                    return mods
+                  })()}
+
+                  {/* Center RP badge — sits on top, creates logo cutout */}
+                  <rect x="9.8" y="9.8" width="5.4" height="5.4" rx="1.2" fill="white"/>
+                  <circle cx="12.5" cy="12.5" r="2.3" fill="url(#qrG)"/>
+                  <text x="12.5" y="13.35" textAnchor="middle" fill="white" fontSize="2.1" fontWeight="bold" fontFamily="Arial,sans-serif">RP</text>
                 </svg>
               </motion.div>
 
@@ -723,8 +757,8 @@ function PaymentPagesFlowVisual() {
                     name: 'WhatsApp',
                     bg: 'bg-[#25D366]',
                     icon: (
-                      <svg viewBox="0 0 24 24" fill="white" className="w-4 h-4">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-9.746 13.925 9.935 9.935 0 001.371 3.855A9.934 9.934 0 0012.012 24c5.465 0 9.93-4.465 9.93-9.93 0-2.585-.994-5.02-2.79-6.841A9.936 9.936 0 0012.051 0" />
+                      <svg viewBox="0 0 24 24" fill="white" className="w-5 h-5">
+                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
                       </svg>
                     ),
                   },
@@ -1136,10 +1170,10 @@ function RecurringBillingFlowVisual() {
           initial={{ opacity: 0, x: 400 }}
           animate={{ opacity: stage === 0 ? 1 : 0, x: stage === 0 ? 0 : -400 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0 p-8 flex flex-col justify-between"
+          className="absolute inset-0 p-8 flex flex-col justify-between gap-6"
         >
           <div>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-ink-500 uppercase tracking-wider">Select Plan</span>
               <div className="flex gap-1">
                 <div className="w-2 h-2 rounded-full bg-brand-600" />
@@ -1150,14 +1184,14 @@ function RecurringBillingFlowVisual() {
               </div>
             </div>
 
-            <p className="text-sm text-ink-600 mb-4">Choose your billing cycle</p>
+            <p className="text-sm text-ink-600 mb-2">Choose your billing cycle</p>
 
             {/* Monthly / Yearly Toggle */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="flex gap-2 mb-4 p-1 bg-ink-100 rounded-lg w-fit"
+              className="flex gap-2 mb-3 p-1 bg-ink-100 rounded-lg w-fit"
             >
               {['Monthly', 'Yearly'].map((label) => (
                 <motion.button
@@ -1175,8 +1209,7 @@ function RecurringBillingFlowVisual() {
               ))}
             </motion.div>
 
-            {/* Pricing Cards - Stagger Animation */}
-            <div className="space-y-2.5">
+            <div className="space-y-1.5">
               {[
                 { name: 'Starter', price: 'RM 49', desc: 'Per month' },
                 { name: 'Growth', price: 'RM 149', desc: 'Per month' },
@@ -1187,7 +1220,7 @@ function RecurringBillingFlowVisual() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 + i * 0.15 }}
                   whileHover={{ scale: 1.02, y: -4 }}
-                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                  className={`p-3 rounded-xl border-2 cursor-pointer transition-all ${
                     i === 1
                       ? 'border-brand-600 bg-brand-50 shadow-lg shadow-brand-100'
                       : 'border-ink-100 hover:border-brand-300'
@@ -1205,7 +1238,7 @@ function RecurringBillingFlowVisual() {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: 0.6, type: 'spring' }}
-                      className="mt-3 flex items-center gap-2 text-xs font-semibold text-brand-600"
+                      className="mt-2 flex items-center gap-2 text-[10px] font-bold text-brand-600 pl-0.5"
                     >
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -1661,8 +1694,10 @@ function PaymentFlowVisual() {
               className="bg-green-50 rounded-2xl p-4 border border-green-200"
             >
               <div className="flex items-start gap-3 mb-4">
-                <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                  RP
+                <div className="w-8 h-8 rounded-full bg-[#25D366] flex items-center justify-center flex-shrink-0">
+                  <svg viewBox="0 0 24 24" fill="white" className="w-5 h-5">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
+                  </svg>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-ink-900 mb-1">RinggitPay</p>
@@ -1690,7 +1725,7 @@ function PaymentFlowVisual() {
                   className="w-full py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-9.746 13.925 9.935 9.935 0 001.371 3.855A9.934 9.934 0 0012.012 24c5.465 0 9.93-4.465 9.93-9.93 0-2.585-.994-5.02-2.79-6.841A9.936 9.936 0 0012.051 0" />
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
                   </svg>
                   Pay via Link
                 </motion.button>
