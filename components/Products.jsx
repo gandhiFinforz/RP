@@ -42,27 +42,42 @@ const products = [
   },
 ]
 
+const STAGE_COUNTS = [5, 5, 4, 3] // collect, billing, pages, recovery
+
 export default function Products() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isLocked, setIsLocked] = useState(false)
-  const [paymentFlowStage, setPaymentFlowStage] = useState(0)
+  const [stages, setStages] = useState([0, 0, 0, 0])
   const sectionRefs = useRef([])
   const tickingRef = useRef(false)
   const activeIndexRef = useRef(0)
-  const paymentFlowStageRef = useRef(0)
+  const stagesRef = useRef([0, 0, 0, 0])
   const lockUntilRef = useRef(0)
-  const sectionElRef = useRef(null)
 
   // Keep refs in sync with state for the scroll handler
   useEffect(() => {
     activeIndexRef.current = activeIndex
-    paymentFlowStageRef.current = paymentFlowStage
-  }, [activeIndex, paymentFlowStage])
+  }, [activeIndex])
 
-  // Initial hold: 2 seconds for first product, 0.5 seconds for others
+  useEffect(() => {
+    stagesRef.current = stages
+  }, [stages])
+
+  const setStageAt = (idx, newStage) => {
+    setStages((prev) => {
+      if (prev[idx] === newStage) return prev
+      const next = [...prev]
+      next[idx] = newStage
+      return next
+    })
+    stagesRef.current = [...stagesRef.current]
+    stagesRef.current[idx] = newStage
+  }
+
+  // Initial hold: 2 seconds for first product, 1 second for others
   useEffect(() => {
     const FIRST_PRODUCT_PAUSE = 2000
-    const OTHER_PRODUCT_PAUSE = 500
+    const OTHER_PRODUCT_PAUSE = 1000
     const pauseTime = activeIndex === 0 ? FIRST_PRODUCT_PAUSE : OTHER_PRODUCT_PAUSE
     lockUntilRef.current = Date.now() + pauseTime
     setIsLocked(true)
@@ -107,158 +122,85 @@ export default function Products() {
     }
   }, [])
 
-  // Scroll-snap with 0.5-second pause between products
+  // Scroll-snap stage navigation across all products
   useEffect(() => {
-    const PAUSE_MS = 500
+    const PAUSE_MS = 1000
+    const STAGE_LOCK_MS = 1000
 
     const isProductsInView = () => {
       const el = document.getElementById('products')
       if (!el) return false
       const rect = el.getBoundingClientRect()
-      // Check if viewport center is within products section
       const viewportCenter = window.innerHeight / 2
       return rect.top <= viewportCenter && rect.bottom >= viewportCenter
     }
 
-    const hasScrolledPast100vh = () => {
-      const firstProduct = sectionRefs.current[0]
-      if (!firstProduct) return false
-      const rect = firstProduct.getBoundingClientRect()
-      // Allow stage progression only after scrolling past 100vh (full viewport)
-      return rect.top <= -window.innerHeight
-    }
-
-    const snapTo = (idx) => {
+    const snapTo = (idx, { startAtEnd = false } = {}) => {
       const target = sectionRefs.current[idx]
       if (!target) return
       target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      const initialStage = startAtEnd ? STAGE_COUNTS[idx] - 1 : 0
+      setStageAt(idx, initialStage)
       const pauseTime = idx === 0 ? 2000 : PAUSE_MS
       lockUntilRef.current = Date.now() + pauseTime
       setIsLocked(true)
       setTimeout(() => setIsLocked(false), pauseTime)
     }
 
-    const handleWheel = (e) => {
-      if (!isProductsInView()) return
-
-      const now = Date.now()
-      // During the pause — block all scroll attempts
-      if (now < lockUntilRef.current) {
-        e.preventDefault()
-        return
-      }
-
-      const direction = e.deltaY > 0 ? 1 : -1
-      const STAGE_LOCK_MS = 500 // 0.5 second lock for stage transitions
-
-      // If on first product (collect), progress through payment flow stages
-      if (activeIndexRef.current === 0) {
-        // Only allow stage progression after scrolling past 100vh
-        if (hasScrolledPast100vh()) {
-          if (direction > 0) {
-            // Scrolling down
-            if (paymentFlowStageRef.current < 4) {
-              e.preventDefault()
-              setPaymentFlowStage(paymentFlowStageRef.current + 1)
-              lockUntilRef.current = Date.now() + STAGE_LOCK_MS
-              setIsLocked(true)
-              setTimeout(() => setIsLocked(false), STAGE_LOCK_MS)
-              return
-            }
-          } else {
-            // Scrolling up
-            if (paymentFlowStageRef.current > 0) {
-              e.preventDefault()
-              setPaymentFlowStage(paymentFlowStageRef.current - 1)
-              lockUntilRef.current = Date.now() + STAGE_LOCK_MS
-              setIsLocked(true)
-              setTimeout(() => setIsLocked(false), STAGE_LOCK_MS)
-              return
-            }
-          }
-          // If at end of payment flow (stage 4) and scrolling down, allow to move to next product
-          if (paymentFlowStageRef.current === 4 && direction > 0) {
-            const next = activeIndexRef.current + direction
-            if (next >= products.length) return
-            e.preventDefault()
-            snapTo(next)
-            return
-          }
-        } else {
-          // Before 100vh is scrolled, allow normal scroll (don't prevent)
-          return
-        }
-      }
-
-      // Normal product navigation
-      const next = activeIndexRef.current + direction
-
-      // At boundaries — allow native scroll to exit the section
-      if (next < 0 || next >= products.length) return
-
+    const advanceStage = (e, delta) => {
       e.preventDefault()
-      snapTo(next)
+      const idx = activeIndexRef.current
+      setStageAt(idx, stagesRef.current[idx] + delta)
+      lockUntilRef.current = Date.now() + STAGE_LOCK_MS
+      setIsLocked(true)
+      setTimeout(() => setIsLocked(false), STAGE_LOCK_MS)
     }
 
-    // Keyboard navigation
-    const handleKey = (e) => {
+    const handleDirection = (e, direction) => {
       if (!isProductsInView()) return
       const now = Date.now()
       if (now < lockUntilRef.current) {
         e.preventDefault()
         return
       }
+
+      const idx = activeIndexRef.current
+      const currentStage = stagesRef.current[idx]
+      const maxStage = STAGE_COUNTS[idx] - 1
+
+      if (direction > 0) {
+        if (currentStage < maxStage) {
+          advanceStage(e, 1)
+          return
+        }
+        const next = idx + 1
+        if (next >= products.length) return
+        e.preventDefault()
+        snapTo(next, { startAtEnd: false })
+        return
+      }
+
+      if (currentStage > 0) {
+        advanceStage(e, -1)
+        return
+      }
+      const next = idx - 1
+      if (next < 0) return
+      e.preventDefault()
+      snapTo(next, { startAtEnd: true })
+    }
+
+    const handleWheel = (e) => {
+      const direction = e.deltaY > 0 ? 1 : -1
+      handleDirection(e, direction)
+    }
+
+    const handleKey = (e) => {
       let direction = 0
       if (['ArrowDown', 'PageDown', ' '].includes(e.key)) direction = 1
       else if (['ArrowUp', 'PageUp'].includes(e.key)) direction = -1
       else return
-
-      const STAGE_LOCK_MS = 500 // 0.5 second lock for stage transitions
-
-      // If on first product (collect), progress through payment flow stages
-      if (activeIndexRef.current === 0) {
-        // Only allow stage progression after scrolling past 100vh
-        if (hasScrolledPast100vh()) {
-          if (direction > 0) {
-            // Moving down
-            if (paymentFlowStageRef.current < 4) {
-              e.preventDefault()
-              setPaymentFlowStage(paymentFlowStageRef.current + 1)
-              lockUntilRef.current = Date.now() + STAGE_LOCK_MS
-              setIsLocked(true)
-              setTimeout(() => setIsLocked(false), STAGE_LOCK_MS)
-              return
-            }
-          } else {
-            // Moving up
-            if (paymentFlowStageRef.current > 0) {
-              e.preventDefault()
-              setPaymentFlowStage(paymentFlowStageRef.current - 1)
-              lockUntilRef.current = Date.now() + STAGE_LOCK_MS
-              setIsLocked(true)
-              setTimeout(() => setIsLocked(false), STAGE_LOCK_MS)
-              return
-            }
-          }
-          // If at end of payment flow (stage 4) and moving down, allow to move to next product
-          if (paymentFlowStageRef.current === 4 && direction > 0) {
-            const next = activeIndexRef.current + direction
-            if (next >= products.length) return
-            e.preventDefault()
-            snapTo(next)
-            return
-          }
-        } else {
-          // Before 100vh is scrolled, allow normal scroll (don't prevent)
-          return
-        }
-      }
-
-      // Normal product navigation
-      const next = activeIndexRef.current + direction
-      if (next < 0 || next >= products.length) return
-      e.preventDefault()
-      snapTo(next)
+      handleDirection(e, direction)
     }
 
     window.addEventListener('wheel', handleWheel, { passive: false })
@@ -363,8 +305,9 @@ export default function Products() {
                       onClick={() => {
                         sectionRefs.current[i]?.scrollIntoView({
                           behavior: 'smooth',
-                          block: 'center',
+                          block: 'start',
                         })
+                        setStageAt(i, 0)
                       }}
                       className="flex-1 group"
                     >
@@ -412,8 +355,7 @@ export default function Products() {
                     >
                       <ProductVisual
                         type={products[activeIndex].visual}
-                        paymentFlowStage={products[activeIndex].id === 'collect' ? paymentFlowStage : undefined}
-                        setPaymentFlowStage={products[activeIndex].id === 'collect' ? setPaymentFlowStage : undefined}
+                        stage={stages[activeIndex]}
                       />
                     </motion.div>
                   </AnimatePresence>
@@ -427,16 +369,12 @@ export default function Products() {
 
         {/* Mobile inline visuals */}
         <div className="lg:hidden space-y-12 mt-8">
-          {products.map((p) => (
+          {products.map((p, i) => (
             <div
               key={`m-${p.id}`}
               className="aspect-square rounded-3xl bg-gradient-to-br from-brand-50 via-white to-ink-50 border border-ink-100 shadow-xl p-8 flex items-center justify-center"
             >
-              <ProductVisual
-                type={p.visual}
-                paymentFlowStage={p.id === 'collect' ? paymentFlowStage : undefined}
-                setPaymentFlowStage={p.id === 'collect' ? setPaymentFlowStage : undefined}
-              />
+              <ProductVisual type={p.visual} stage={stages[i]} mobile />
             </div>
           ))}
         </div>
@@ -518,19 +456,21 @@ function BrandLogo({ className = 'w-12 h-12' }) {
   )
 }
 
-function PaymentPagesFlowVisual() {
-  const [stage, setStage] = useState(0)
+function PaymentPagesFlowVisual({ stage: externalStage = 0, autoCycle = false }) {
+  const [internalStage, setInternalStage] = useState(0)
+  const stage = autoCycle ? internalStage : externalStage
   const [confetti, setConfetti] = useState([])
   const [copied, setCopied] = useState(false)
   const [revenueCount, setRevenueCount] = useState(0)
   const [tickerItems, setTickerItems] = useState([])
 
   useEffect(() => {
+    if (!autoCycle) return
     const timer = setInterval(() => {
-      setStage((prev) => (prev < 3 ? prev + 1 : 0))
+      setInternalStage((prev) => (prev < 3 ? prev + 1 : 0))
     }, 5500)
     return () => clearInterval(timer)
-  }, [])
+  }, [autoCycle])
 
   // Copy ripple effect on stage 2
   useEffect(() => {
@@ -1231,16 +1171,18 @@ function AmountCounter({ target, active }) {
   return <span className="tabular-nums">RM {count}</span>
 }
 
-function RecurringBillingFlowVisual() {
-  const [stage, setStage] = useState(0)
+function RecurringBillingFlowVisual({ stage: externalStage = 0, autoCycle = false }) {
+  const [internalStage, setInternalStage] = useState(0)
+  const stage = autoCycle ? internalStage : externalStage
   const [confetti, setConfetti] = useState([])
 
   useEffect(() => {
+    if (!autoCycle) return
     const timer = setInterval(() => {
-      setStage((prev) => (prev < 4 ? prev + 1 : 0))
+      setInternalStage((prev) => (prev < 4 ? prev + 1 : 0))
     }, 4000)
     return () => clearInterval(timer)
-  }, [])
+  }, [autoCycle])
 
   useEffect(() => {
     if (stage === 4) {
@@ -2085,34 +2027,36 @@ function PaymentFlowVisual({ paymentFlowStage = 0, setPaymentFlowStage }) {
   )
 }
 
-function ProductVisual({ type, paymentFlowStage, setPaymentFlowStage }) {
+function ProductVisual({ type, stage = 0, mobile = false }) {
   if (type === 'collect') {
-    return <PaymentFlowVisual paymentFlowStage={paymentFlowStage} setPaymentFlowStage={setPaymentFlowStage} />
+    return <PaymentFlowVisual paymentFlowStage={stage} />
   }
 
   if (type === 'billing') {
-    return <RecurringBillingFlowVisual />
+    return <RecurringBillingFlowVisual stage={stage} autoCycle={mobile} />
   }
 
   if (type === 'pages') {
-    return <PaymentPagesFlowVisual />
+    return <PaymentPagesFlowVisual stage={stage} autoCycle={mobile} />
   }
 
   // recovery
-  return <SmartRecoveryFlowVisual />
+  return <SmartRecoveryFlowVisual stage={stage} autoCycle={mobile} />
 }
 
-function SmartRecoveryFlowVisual() {
-  const [stage, setStage] = useState(0)
+function SmartRecoveryFlowVisual({ stage: externalStage = 0, autoCycle = false }) {
+  const [internalStage, setInternalStage] = useState(0)
+  const stage = autoCycle ? internalStage : externalStage
   const [recoveredAmount, setRecoveredAmount] = useState(0)
   const [recoveryPercent, setRecoveryPercent] = useState(0)
 
   useEffect(() => {
+    if (!autoCycle) return
     const timer = setInterval(() => {
-      setStage((prev) => (prev < 2 ? prev + 1 : 0))
+      setInternalStage((prev) => (prev < 2 ? prev + 1 : 0))
     }, 5500)
     return () => clearInterval(timer)
-  }, [])
+  }, [autoCycle])
 
   // Counter animation for stage 3
   useEffect(() => {
